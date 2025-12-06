@@ -1511,6 +1511,14 @@ Single Page Style
   margin-top: 40px;
 }
 
+.single-property .main-content h4.property-price {
+  color: #f35525;
+  font-size: 28px;
+  font-weight: 700;
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
 .single-property .accordion {
   margin-top: 60px;
   margin-left: 0px;
@@ -1585,6 +1593,54 @@ Single Page Style
   font-size: 15px;
   color: #aaa;
   font-weight: 400;
+}
+
+.single-property .property-details-card {
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  margin-top: 45px;
+  margin-bottom: 30px;
+}
+
+.single-property .property-details-card ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  gap: 20px;
+}
+
+.single-property .property-details-card ul li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.single-property .property-details-card ul li img {
+  max-width: 52px;
+  margin: 0 0 15px 0;
+  float: none;
+}
+
+.single-property .property-details-card ul li h4 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 5px 0;
+  color: #1e1e1e;
+}
+
+.single-property .property-details-card ul li span {
+  font-size: 15px;
+  color: #aaa;
 }
 
 
