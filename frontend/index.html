@@ -179,7 +179,7 @@
       <div class="row">
         <div class="col-lg-4">
           <div class="left-image">
-            <img src="assets/images/featured.jpg" alt="">
+            <img src="assets/images/villa-property-09" alt="">
             <a href="property-details.html"><img src="assets/images/featured-icon.png" alt="" style="max-width: 60px; padding: 0px;"></a>
           </div>
         </div>
@@ -688,7 +688,7 @@
   </script>
 
   <script>
-    // Populate Best Deal section with most recent properties
+  
     document.addEventListener('DOMContentLoaded', function() {
       if (!window.propertyData) return;
 
@@ -731,7 +731,7 @@
           <li>Floor number <span>${latestApartment.floor}</span></li>
           <li>Number of Bedrooms <span>${latestApartment.bedrooms}</span></li>
           <li>Parking Available <span>${latestApartment.parking}</span></li>
-          <li>Payment Process <span>₱${latestApartment.price}</span></li>
+          <li>Price<span>${latestApartment.price}</span></li>
         `;
         document.getElementById('apartment-image').src = 'assets/images/' + latestApartment.image;
         document.getElementById('apartment-description').innerHTML = truncateText(latestApartment.description, 250);
@@ -745,7 +745,7 @@
           <li>Floor number <span>${latestHouse.floor}</span></li>
           <li>Number of Bedrooms <span>${latestHouse.bedrooms}</span></li>
           <li>Parking Available <span>${latestHouse.parking}</span></li>
-          <li>Payment Process <span>₱${latestHouse.price}</span></li>
+          <li>Price<span>${latestHouse.price}</span></li>
         `;
         document.getElementById('house-image').src = 'assets/images/' + latestHouse.image;
         document.getElementById('house-description').innerHTML = truncateText(latestHouse.description, 250);
@@ -758,7 +758,7 @@
           <li>Floor number <span>${latestVillaHouse.floor}</span></li>
           <li>Number of Bedrooms <span>${latestVillaHouse.bedrooms}</span></li>
           <li>Parking Available <span>${latestVillaHouse.parking}</span></li>
-          <li>Payment Process <span>₱${latestVillaHouse.price}</span></li>
+          <li>Price<span>${latestVillaHouse.price}</span></li>
         `;
         document.getElementById('villahouse-image').src = 'assets/images/' + latestVillaHouse.image;
         document.getElementById('villahouse-description').innerHTML = truncateText(latestVillaHouse.description, 250);
