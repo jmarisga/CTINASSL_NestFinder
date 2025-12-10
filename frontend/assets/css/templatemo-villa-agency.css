@@ -191,16 +191,31 @@ body {
 }
 
 .main-button a {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   background-color: #1e1e1e;
   color: #fff;
   font-size: 14px;
   font-weight: 500;
-  height: 40px;
-  line-height: 40px;
-  padding: 0px 30px;
+  height: 48px;
+  line-height: 1;
+  padding: 0px 32px;
+  min-width: 220px;
   border-radius: 25px;
   transition: all .3s;
+}
+
+.main-button a i {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.main-button.schedule-visit {
+  display: flex;
+  justify-content: center;
+  padding-left: 55px;
 }
 
 .main-button a:hover {
