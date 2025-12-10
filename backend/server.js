@@ -19,16 +19,32 @@ const app = express();
 // Add standard security headers
 app.use(helmet());
 
-// Allow requests only from local dev frontends (adjust origins when you deploy)
+// Allow requests from local dev frontends; default to echoing any origin in dev
 app.use(
   cors({
-    origin: [
-      'http://localhost:3000',
-      'http://127.0.0.1:3000',
-      'http://localhost:5500',
-      'http://127.0.0.1:5500',
-      'http://localhost',
-    ],
+    origin: (origin, callback) => {
+      // Allow same-origin or tools that omit origin (mobile apps, curl, file://)
+      if (!origin) return callback(null, true);
+
+      const allowlist = [
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
+        'http://localhost:5500',
+        'http://127.0.0.1:5500',
+        'http://localhost',
+      ];
+
+      if (allowlist.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // In dev, be permissive so static-file previews (file://) or other ports work
+      if (process.env.NODE_ENV !== 'production') {
+        return callback(null, true);
+      }
+
+      return callback(new Error('CORS not allowed'), false);
+    },
   })
 );
 

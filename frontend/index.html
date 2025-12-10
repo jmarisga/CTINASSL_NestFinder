@@ -73,8 +73,9 @@
                       <li><a href="index.html" class="active">Home</a></li>
                       <li><a href="properties.html">Properties</a></li>
                       <li><a href="property-details.html">Property Details</a></li>
-                      <li><a href="#" id="nav-login-link">Login</a></li>
-                      <li><a href="#" id="nav-register-link">Register</a></li>
+                      <li id="nav-login-item"><a href="#" id="nav-login-link">Login</a></li>
+                      <li id="nav-register-item"><a href="#" id="nav-register-link">Register</a></li>
+                      <li id="nav-logout-item" style="display:none;"><a href="#" id="nav-logout-link">Logout</a></li>
                       <li><a href="#" id="nav-schedule-link"><i class="fa fa-calendar"></i> Schedule a visit</a></li>
                   </ul>   
                     <a class='menu-trigger'>
@@ -121,6 +122,37 @@
     </div>
   </div>
 
+  <div class="modal fade" id="authFeedbackModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="auth-feedback-title">Notice</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="auth-feedback-body">Success</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Confirm logout</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">Are you sure you want to log out?</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="logout-confirm-no">Cancel</button>
+          <button type="button" class="btn btn-primary" id="logout-confirm-yes">Logout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="modal fade" id="scheduleModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -155,7 +187,7 @@
     <div class="owl-carousel owl-banner">
       <div class="item item-1">
         <div class="header-text">
-          <span class="category">Binan, <em>Laguna</em></span>
+          <span class="category">Biñan, <em>Laguna</em></span>
           <h2>Hurry!<br>Get the Best Nest for you</h2>
         </div>
       </div>
@@ -546,7 +578,53 @@
     }
 
     (function () {
-      const API_BASE = 'http://localhost:5001/api';
+      const API_BASE = 'http://localhost:5000/api';
+
+      const feedbackModalEl = document.getElementById('authFeedbackModal');
+      const feedbackModal = feedbackModalEl ? new bootstrap.Modal(feedbackModalEl) : null;
+
+      const logoutConfirmModalEl = document.getElementById('logoutConfirmModal');
+      const logoutConfirmModal = logoutConfirmModalEl ? new bootstrap.Modal(logoutConfirmModalEl) : null;
+      const logoutYesBtn = document.getElementById('logout-confirm-yes');
+      const logoutNoBtn = document.getElementById('logout-confirm-no');
+      let logoutConfirmResolver = null;
+
+      function askLogoutConfirm() {
+        return new Promise((resolve) => {
+          if (!logoutConfirmModal) {
+            resolve(confirm('Are you sure you want to log out?'));
+            return;
+          }
+          logoutConfirmResolver = resolve;
+          logoutConfirmModal.show();
+        });
+      }
+
+      if (logoutYesBtn) {
+        logoutYesBtn.addEventListener('click', () => {
+          if (logoutConfirmModal) logoutConfirmModal.hide();
+          if (logoutConfirmResolver) logoutConfirmResolver(true);
+          logoutConfirmResolver = null;
+        });
+      }
+
+      if (logoutNoBtn) {
+        logoutNoBtn.addEventListener('click', () => {
+          if (logoutConfirmModal) logoutConfirmModal.hide();
+          if (logoutConfirmResolver) logoutConfirmResolver(false);
+          logoutConfirmResolver = null;
+        });
+      }
+
+      function showAuthFeedback(title, message) {
+        if (!feedbackModal) {
+          alert(message || title || 'Notification');
+          return;
+        }
+        document.getElementById('auth-feedback-title').textContent = title || 'Notice';
+        document.getElementById('auth-feedback-body').textContent = message || '';
+        feedbackModal.show();
+      }
 
       function getToken() {
         return localStorage.getItem('nestfinder_jwt') || '';
@@ -577,18 +655,24 @@
         $('#authModal').data('mode', mode);
       }
 
+      function updateAuthNav() {
+        const isLoggedIn = !!getToken();
+        $('#nav-login-item, #nav-register-item').toggle(!isLoggedIn);
+        $('#nav-logout-item').toggle(isLoggedIn);
+      }
+
       function openScheduleModal(propertyId, propertyName) {
         const token = getToken();
         if (!token) {
           openAuthModal('login');
           return;
         }
-        $('#schedule-property-name').val(propertyName || '');
+        $('#schedule-form')[0].reset();
+        $('#schedule-property-name').val(propertyName || 'Selected property');
         $('#scheduleModal').data('property-id', propertyId);
-        $('#scheduleModal').modal('show');
         $('#schedule-error').hide();
         $('#schedule-success').hide();
-        $('#schedule-form')[0].reset();
+        $('#scheduleModal').modal('show');
       }
 
       $('#nav-login-link').on('click', function (e) {
@@ -599,6 +683,16 @@
       $('#nav-register-link').on('click', function (e) {
         e.preventDefault();
         openAuthModal('register');
+      });
+
+      $('#nav-logout-link').on('click', function (e) {
+        e.preventDefault();
+        askLogoutConfirm().then((ok) => {
+          if (!ok) return;
+          clearToken();
+          updateAuthNav();
+          showAuthFeedback('Logged out', 'You have been logged out successfully.');
+        });
       });
 
       $('#nav-schedule-link').on('click', function (e) {
@@ -642,9 +736,19 @@
           success: function (res) {
             setToken(res.token);
             $('#authModal').modal('hide');
+            updateAuthNav();
+            const isLogin = mode === 'login';
+            showAuthFeedback(
+              isLogin ? 'Login successful' : 'Registration successful',
+              isLogin ? 'You are now logged in.' : 'Your account is ready. You are now logged in.'
+            );
           },
           error: function (xhr) {
-            const message = (xhr.responseJSON && xhr.responseJSON.message) || 'Authentication failed';
+            const message =
+              (xhr.responseJSON && xhr.responseJSON.message) ||
+              xhr.statusText ||
+              'Authentication failed';
+            console.error('Auth error', { status: xhr.status, response: xhr.responseText });
             $('#auth-error').text(message).show();
           },
         });
@@ -662,6 +766,16 @@
         const propertyName = $('#schedule-property-name').val() || 'Custom property';
         const visitDate = $('#schedule-date').val();
         const notes = $('#schedule-notes').val();
+
+        // Validate future datetime
+        if (!visitDate || Number.isNaN(new Date(visitDate).getTime())) {
+          $('#schedule-error').text('Please choose a valid date and time.').show();
+          return;
+        }
+        if (new Date(visitDate).getTime() <= Date.now()) {
+          $('#schedule-error').text('Please pick a future date/time for your visit.').show();
+          return;
+        }
 
         $('#schedule-error').hide();
         $('#schedule-success').hide();
@@ -684,6 +798,8 @@
           },
         });
       });
+
+      updateAuthNav();
     })();
   </script>
 
@@ -731,7 +847,7 @@
           <li>Floor number <span>${latestApartment.floor}</span></li>
           <li>Number of Bedrooms <span>${latestApartment.bedrooms}</span></li>
           <li>Parking Available <span>${latestApartment.parking}</span></li>
-          <li>Payment Process <span>₱${latestApartment.price}</span></li>
+          <li>Payment Process <span>${latestApartment.price}</span></li>
         `;
         document.getElementById('apartment-image').src = 'assets/images/' + latestApartment.image;
         document.getElementById('apartment-description').innerHTML = truncateText(latestApartment.description, 250);
@@ -745,7 +861,7 @@
           <li>Floor number <span>${latestHouse.floor}</span></li>
           <li>Number of Bedrooms <span>${latestHouse.bedrooms}</span></li>
           <li>Parking Available <span>${latestHouse.parking}</span></li>
-          <li>Payment Process <span>₱${latestHouse.price}</span></li>
+          <li>Payment Process <span>${latestHouse.price}</span></li>
         `;
         document.getElementById('house-image').src = 'assets/images/' + latestHouse.image;
         document.getElementById('house-description').innerHTML = truncateText(latestHouse.description, 250);
@@ -758,7 +874,7 @@
           <li>Floor number <span>${latestVillaHouse.floor}</span></li>
           <li>Number of Bedrooms <span>${latestVillaHouse.bedrooms}</span></li>
           <li>Parking Available <span>${latestVillaHouse.parking}</span></li>
-          <li>Payment Process <span>₱${latestVillaHouse.price}</span></li>
+          <li>Payment Process <span>${latestVillaHouse.price}</span></li>
         `;
         document.getElementById('villahouse-image').src = 'assets/images/' + latestVillaHouse.image;
         document.getElementById('villahouse-description').innerHTML = truncateText(latestVillaHouse.description, 250);

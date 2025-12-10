@@ -19,6 +19,11 @@
     <link rel="stylesheet" href="assets/css/animate.css">
     <link rel="stylesheet"href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
 
+    <!-- Hide stray preloader dot on this page -->
+    <style>
+      .js-preloader { display: none !important; }
+    </style>
+
   </head>
 
 <body>
@@ -74,6 +79,9 @@
                       <li><a href="properties.html" class="active">Properties</a></li>
                       <li><a href="property-details.html">Property Details</a></li>
                       <li><a href="contact.html">Contact Us</a></li>
+                      <li id="nav-login-item"><a href="#" id="nav-login-link">Login</a></li>
+                      <li id="nav-register-item"><a href="#" id="nav-register-link">Register</a></li>
+                      <li id="nav-logout-item" style="display:none;"><a href="#" id="nav-logout-link">Logout</a></li>
                       <li><a href="#"><i class="fa fa-calendar"></i> Schedule a visit</a></li>
                   </ul>   
                     <a class='menu-trigger'>
@@ -86,6 +94,70 @@
     </div>
   </header>
   <!-- ***** Header Area End ***** -->
+
+  <!-- Auth Modal -->
+  <div class="modal fade" id="authModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="authModalTitle">Login</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="auth-form">
+            <div class="mb-3" id="auth-name-group" style="display:none;">
+              <label for="auth-name" class="form-label">Full Name</label>
+              <input type="text" class="form-control" id="auth-name" placeholder="Your full name">
+            </div>
+            <div class="mb-3">
+              <label for="auth-email" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="auth-email" placeholder="you@example.com" required>
+            </div>
+            <div class="mb-3">
+              <label for="auth-password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="auth-password" placeholder="********" minlength="8" required>
+            </div>
+            <div class="alert alert-danger py-2 px-3" id="auth-error" style="display:none;font-size:0.85rem;"></div>
+            <button type="submit" class="btn btn-primary w-100" id="auth-submit-btn">Login</button>
+            <p class="mt-3 mb-0 text-center" id="auth-toggle-text" style="font-size:0.9rem;">
+              Don't have an account? <a href="#" id="auth-toggle-link">Register</a>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="authFeedbackModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="auth-feedback-title">Notice</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="auth-feedback-body">Success</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Confirm logout</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">Are you sure you want to log out?</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="logout-confirm-no">Cancel</button>
+          <button type="button" class="btn btn-primary" id="logout-confirm-yes">Logout</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="page-heading header-text">
     <div class="container">
@@ -151,6 +223,7 @@
     // Function to build URL parameters for property details
     function buildPropertyURL(property) {
       const params = new URLSearchParams({
+        id: property.id,
         name: property.name,
         category: property.category,
         price: property.price,
@@ -171,7 +244,7 @@
       const properties = window.propertyData.getAllProperties();
       
       container.innerHTML = properties.map(p => `
-        <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 ${p.categoryClass}">
+        <div class="col-lg-4 col-md-6 properties-items ${p.categoryClass}">
           <div class="item" data-property-id="${p.id}">
             <a href="property-details.html?${buildPropertyURL(p)}">
               <img src="assets/images/${p.image}" alt="">
@@ -187,37 +260,210 @@
               <li>Parking: <span>${p.parking}</span></li>
             </ul>
             <div class="main-button">
-              <a href="property-details.html?${buildPropertyURL(p)}">Schedule a visit</a>
+              <a href="property-details.html?${buildPropertyURL(p)}">View Details</a>
             </div>
           </div>
         </div>
       `).join('');
       
-      // Initialize Isotope after content is loaded
+      // Initialize Isotope after content & images are ready to avoid overlap
       const elem = document.querySelector('.properties-box');
       const filtersElem = document.querySelector('.properties-filter');
-      if (elem) {
+
+      function initIsotope() {
         const iso = new Isotope(elem, {
           itemSelector: '.properties-items',
-          layoutMode: 'masonry'
+          layoutMode: 'fitRows'
         });
-        
+
+        // trigger a layout recalculation shortly after init
+        setTimeout(() => iso.layout(), 100);
+
         if (filtersElem) {
           filtersElem.addEventListener('click', function(event) {
-            if (event.target.tagName !== 'A') {
-              return;
-            }
-            const filterValue = event.target.getAttribute('data-filter');
-            iso.arrange({
-              filter: filterValue
-            });
-            filtersElem.querySelector('.is_active').classList.remove('is_active');
-            event.target.classList.add('is_active');
+            const link = event.target.closest('a');
+            if (!link) return;
             event.preventDefault();
+            const filterValue = link.getAttribute('data-filter');
+            iso.arrange({ filter: filterValue });
+            const active = filtersElem.querySelector('.is_active');
+            if (active) active.classList.remove('is_active');
+            link.classList.add('is_active');
+          });
+        }
+      }
+
+      if (elem) {
+        const images = elem.querySelectorAll('img');
+        let loaded = 0;
+        const total = images.length;
+
+        if (total === 0) {
+          initIsotope();
+        } else {
+          images.forEach(img => {
+            const done = () => {
+              loaded += 1;
+              if (loaded === total) initIsotope();
+            };
+            if (img.complete) {
+              done();
+            } else {
+              img.addEventListener('load', done);
+              img.addEventListener('error', done);
+            }
           });
         }
       }
     });
+  </script>
+
+  <script>
+    (function () {
+      const API_BASE = 'http://localhost:5000/api';
+      const feedbackModalEl = document.getElementById('authFeedbackModal');
+      const feedbackModal = feedbackModalEl ? new bootstrap.Modal(feedbackModalEl) : null;
+
+      const logoutConfirmModalEl = document.getElementById('logoutConfirmModal');
+      const logoutConfirmModal = logoutConfirmModalEl ? new bootstrap.Modal(logoutConfirmModalEl) : null;
+      const logoutYesBtn = document.getElementById('logout-confirm-yes');
+      const logoutNoBtn = document.getElementById('logout-confirm-no');
+      let logoutConfirmResolver = null;
+
+      function askLogoutConfirm() {
+        return new Promise((resolve) => {
+          if (!logoutConfirmModal) {
+            resolve(confirm('Are you sure you want to log out?'));
+            return;
+          }
+          logoutConfirmResolver = resolve;
+          logoutConfirmModal.show();
+        });
+      }
+
+      if (logoutYesBtn) {
+        logoutYesBtn.addEventListener('click', () => {
+          if (logoutConfirmModal) logoutConfirmModal.hide();
+          if (logoutConfirmResolver) logoutConfirmResolver(true);
+          logoutConfirmResolver = null;
+        });
+      }
+
+      if (logoutNoBtn) {
+        logoutNoBtn.addEventListener('click', () => {
+          if (logoutConfirmModal) logoutConfirmModal.hide();
+          if (logoutConfirmResolver) logoutConfirmResolver(false);
+          logoutConfirmResolver = null;
+        });
+      }
+
+      function showAuthFeedback(title, message) {
+        if (!feedbackModal) {
+          alert(message || title || 'Notification');
+          return;
+        }
+        document.getElementById('auth-feedback-title').textContent = title || 'Notice';
+        document.getElementById('auth-feedback-body').textContent = message || '';
+        feedbackModal.show();
+      }
+
+      function getToken() {
+        return localStorage.getItem('nestfinder_jwt') || '';
+      }
+
+      function setToken(token) {
+        if (token) localStorage.setItem('nestfinder_jwt', token);
+      }
+
+      function clearToken() {
+        localStorage.removeItem('nestfinder_jwt');
+      }
+
+      function updateAuthNav() {
+        const isLoggedIn = !!getToken();
+        $('#nav-login-item, #nav-register-item').toggle(!isLoggedIn);
+        $('#nav-logout-item').toggle(isLoggedIn);
+      }
+
+      function openAuthModal(mode) {
+        const isLogin = mode === 'login';
+        $('#authModalTitle').text(isLogin ? 'Login' : 'Create an account');
+        $('#auth-name-group').toggle(!isLogin);
+        $('#auth-submit-btn').text(isLogin ? 'Login' : 'Register');
+        $('#auth-error').hide();
+        $('#auth-form')[0].reset();
+        const html = isLogin
+          ? "Don't have an account? <a href='#' id='auth-toggle-link'>Register</a>"
+          : "Already have an account? <a href='#' id='auth-toggle-link'>Login</a>";
+        $('#auth-toggle-text').html(html);
+        $('#authModal').modal('show');
+        $('#authModal').data('mode', mode);
+      }
+
+      $('#nav-login-link').on('click', function (e) {
+        e.preventDefault();
+        openAuthModal('login');
+      });
+
+      $('#nav-register-link').on('click', function (e) {
+        e.preventDefault();
+        openAuthModal('register');
+      });
+
+      $('#nav-logout-link').on('click', function (e) {
+        e.preventDefault();
+        askLogoutConfirm().then((ok) => {
+          if (!ok) return;
+          clearToken();
+          updateAuthNav();
+          showAuthFeedback('Logged out', 'You have been logged out successfully.');
+        });
+      });
+
+      $(document).on('click', '#auth-toggle-link', function (e) {
+        e.preventDefault();
+        const currentMode = $('#authModal').data('mode') || 'login';
+        openAuthModal(currentMode === 'login' ? 'register' : 'login');
+      });
+
+      $('#auth-form').on('submit', function (e) {
+        e.preventDefault();
+        const mode = $('#authModal').data('mode') || 'login';
+        const name = $('#auth-name').val();
+        const email = $('#auth-email').val();
+        const password = $('#auth-password').val();
+        const endpoint = mode === 'login' ? '/auth/login' : '/auth/register';
+
+        $('#auth-error').hide();
+
+        $.ajax({
+          url: API_BASE + endpoint,
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({ name, email, password }),
+          success: function (res) {
+            setToken(res.token);
+            $('#authModal').modal('hide');
+            updateAuthNav();
+            const isLogin = mode === 'login';
+            showAuthFeedback(
+              isLogin ? 'Login successful' : 'Registration successful',
+              isLogin ? 'You are now logged in.' : 'Your account is ready. You are now logged in.'
+            );
+          },
+          error: function (xhr) {
+            const message =
+              (xhr.responseJSON && xhr.responseJSON.message) ||
+              xhr.statusText ||
+              'Authentication failed';
+            console.error('Auth error', { status: xhr.status, response: xhr.responseText });
+            $('#auth-error').text(message).show();
+          },
+        });
+      });
+
+      updateAuthNav();
+    })();
   </script>
 
   </body>

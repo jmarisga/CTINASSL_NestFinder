@@ -19,6 +19,15 @@
     <link rel="stylesheet" href="assets/css/owl.css">
     <link rel="stylesheet" href="assets/css/animate.css">
     <link rel="stylesheet"href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
+    <style>
+      /* Make the schedule CTA span the card width */
+      .info-table .main-button a {
+        display: block;
+        width: 100%;
+        padding: 14px 0;
+        border-radius: 28px;
+      }
+    </style>
 
   </head>
 
@@ -75,7 +84,10 @@
                       <li><a href="properties.html">Properties</a></li>
                       <li><a href="property-details.html" class="active">Property Details</a></li>
                       <li><a href="contact.html">Contact Us</a></li>
-                      <li><a href="#"><i class="fa fa-calendar"></i> Schedule a visit</a></li>
+                      <li id="nav-login-item"><a href="#" id="nav-login-link">Login</a></li>
+                      <li id="nav-register-item"><a href="#" id="nav-register-link">Register</a></li>
+                      <li id="nav-logout-item" style="display:none;"><a href="#" id="nav-logout-link">Logout</a></li>
+                      <li><a href="#" id="nav-schedule-link"><i class="fa fa-calendar"></i> Schedule a visit</a></li>
                   </ul>   
                     <a class='menu-trigger'>
                         <span>Menu</span>
@@ -87,6 +99,69 @@
     </div>
   </header>
   <!-- ***** Header Area End ***** -->
+
+  <!-- Auth & Schedule Modals -->
+  <div class="modal fade" id="authModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="authModalTitle">Login</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="auth-form">
+            <div class="mb-3" id="auth-name-group" style="display:none;">
+              <label for="auth-name" class="form-label">Full Name</label>
+              <input type="text" class="form-control" id="auth-name" placeholder="Your full name">
+            </div>
+            <div class="mb-3">
+              <label for="auth-email" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="auth-email" placeholder="you@example.com" required>
+            </div>
+            <div class="mb-3">
+              <label for="auth-password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="auth-password" placeholder="********" minlength="8" required>
+            </div>
+            <div class="alert alert-danger py-2 px-3" id="auth-error" style="display:none;font-size:0.85rem;"></div>
+            <button type="submit" class="btn btn-primary w-100" id="auth-submit-btn">Login</button>
+            <p class="mt-3 mb-0 text-center" id="auth-toggle-text" style="font-size:0.9rem;">
+              Don't have an account? <a href="#" id="auth-toggle-link">Register</a>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="scheduleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Schedule a Visit</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="schedule-form">
+            <div class="mb-3">
+              <label for="schedule-property-name" class="form-label">Selected Property</label>
+              <input type="text" class="form-control" id="schedule-property-name" readonly>
+            </div>
+            <div class="mb-3">
+              <label for="schedule-date" class="form-label">Preferred Date & Time</label>
+              <input type="datetime-local" class="form-control" id="schedule-date" required>
+            </div>
+            <div class="mb-3">
+              <label for="schedule-notes" class="form-label">Notes (optional)</label>
+              <textarea class="form-control" id="schedule-notes" rows="3" placeholder="Anything specific you would like to see or know?"></textarea>
+            </div>
+            <div class="alert alert-danger py-2 px-3" id="schedule-error" style="display:none;font-size:0.85rem;"></div>
+            <div class="alert alert-success py-2 px-3" id="schedule-success" style="display:none;font-size:0.85rem;"></div>
+            <button type="submit" class="btn btn-primary w-100">Confirm Visit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="page-heading header-text">
     <div class="container">
@@ -203,6 +278,9 @@
               </li>
             </ul>
           </div>
+          <div class="main-button" style="margin-top: 30px; text-align: center;">
+            <a href="#" id="schedule-visit-btn" aria-label="Schedule a visit"><i class="fa fa-calendar"></i> Schedule a Visit</a>
+          </div>
         </div>
       </div>
     </div>
@@ -220,55 +298,315 @@
   <script src="assets/js/custom.js"></script>
   <script src="assets/js/property-data.js"></script>
 
+  <div class="modal fade" id="authFeedbackModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="auth-feedback-title">Notice</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="auth-feedback-body">Success</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Confirm logout</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">Are you sure you want to log out?</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="logout-confirm-no">Cancel</button>
+          <button type="button" class="btn btn-primary" id="logout-confirm-yes">Logout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // Load property details from URL parameters or show most recent property
+    // Load property details and wire auth/scheduling against visits API
     document.addEventListener('DOMContentLoaded', function() {
       const params = new URLSearchParams(window.location.search);
+      const propertyIdFromUrl = params.get('id') || params.get('propertyId');
       
-      let name = params.get('name');
-      let category = params.get('category');
-      let price = params.get('price');
-      let bedrooms = params.get('bedrooms');
-      let bathrooms = params.get('bathrooms');
-      let area = params.get('area');
-      let floor = params.get('floor');
-      let parking = params.get('parking');
-      let image = params.get('image');
-      let description = params.get('description');
-      
-      // If no URL parameters, load the most recent property (last in array)
-      if (!name && window.propertyData && window.propertyData.properties) {
-        const properties = window.propertyData.properties;
-        const mostRecentProperty = properties[properties.length - 1]; // Get last property
-        
-        name = mostRecentProperty.name;
-        category = mostRecentProperty.category;
-        price = mostRecentProperty.price;
-        bedrooms = mostRecentProperty.bedrooms;
-        bathrooms = mostRecentProperty.bathrooms;
-        area = mostRecentProperty.area;
-        floor = mostRecentProperty.floor;
-        parking = mostRecentProperty.parking;
-        image = mostRecentProperty.image;
-        description = mostRecentProperty.description;
+      const lookupByName = (name) => {
+        if (!name || !window.propertyData || !window.propertyData.properties) return null;
+        return window.propertyData.properties.find(p => p.name === name) || null;
+      };
+
+      const pickFallback = () => {
+        if (window.propertyData && window.propertyData.properties && window.propertyData.properties.length) {
+          return window.propertyData.properties[window.propertyData.properties.length - 1];
+        }
+        return null;
+      };
+
+      // Start with URL params
+      let currentProperty = {
+        id: propertyIdFromUrl || '',
+        name: params.get('name'),
+        category: params.get('category'),
+        price: params.get('price'),
+        bedrooms: params.get('bedrooms'),
+        bathrooms: params.get('bathrooms'),
+        area: params.get('area'),
+        floor: params.get('floor'),
+        parking: params.get('parking'),
+        image: params.get('image'),
+        description: params.get('description'),
+      };
+
+      // If missing id or other fields, try to enrich from property data
+      if (!currentProperty.id || !currentProperty.name) {
+        const match = currentProperty.name ? lookupByName(currentProperty.name) : pickFallback();
+        if (match) {
+          currentProperty = { ...match, ...currentProperty, id: currentProperty.id || match.id };
+        }
       }
-      
-      // Update the page with the property details
-      if (name) document.getElementById('property-name').textContent = name;
-      if (category) document.getElementById('property-category').textContent = category;
-      if (image) document.getElementById('property-image').src = 'assets/images/' + image;
-      if (price) document.getElementById('property-price-display').textContent = price;
-      if (description) document.getElementById('property-description').innerHTML = description;
-      
-      // Update the right side card
-      if (area) document.getElementById('property-area').innerHTML = area + '<br><span>Total Flat Space</span>';
-      
-      // Update the horizontal property details card below image
-      if (bedrooms) document.getElementById('property-bedrooms').textContent = bedrooms;
-      if (bathrooms) document.getElementById('property-bathrooms').textContent = bathrooms;
-      if (area) document.getElementById('property-area-display').textContent = area;
-      if (floor) document.getElementById('property-floor').textContent = floor;
-      if (parking) document.getElementById('property-parking').textContent = parking;
+
+      // Final fallback to ensure we always have some identifier
+      if (!currentProperty.id && currentProperty.name) {
+        currentProperty.id = currentProperty.name.toLowerCase().replace(/\s+/g, '-');
+      }
+
+      // Render details
+      if (currentProperty.name) document.getElementById('property-name').textContent = currentProperty.name;
+      if (currentProperty.category) document.getElementById('property-category').textContent = currentProperty.category;
+      if (currentProperty.image) document.getElementById('property-image').src = 'assets/images/' + currentProperty.image;
+      if (currentProperty.price) document.getElementById('property-price-display').textContent = currentProperty.price;
+      if (currentProperty.description) document.getElementById('property-description').innerHTML = currentProperty.description;
+
+      if (currentProperty.area) document.getElementById('property-area').innerHTML = currentProperty.area + '<br><span>Total Flat Space</span>';
+      if (currentProperty.bedrooms) document.getElementById('property-bedrooms').textContent = currentProperty.bedrooms;
+      if (currentProperty.bathrooms) document.getElementById('property-bathrooms').textContent = currentProperty.bathrooms;
+      if (currentProperty.area) document.getElementById('property-area-display').textContent = currentProperty.area;
+      if (currentProperty.floor) document.getElementById('property-floor').textContent = currentProperty.floor;
+      if (currentProperty.parking) document.getElementById('property-parking').textContent = currentProperty.parking;
+
+      // ------- Auth + Scheduling -------
+      const API_BASE = 'http://localhost:5000/api';
+
+      const feedbackModalEl = document.getElementById('authFeedbackModal');
+      const feedbackModal = feedbackModalEl ? new bootstrap.Modal(feedbackModalEl) : null;
+
+      const logoutConfirmModalEl = document.getElementById('logoutConfirmModal');
+      const logoutConfirmModal = logoutConfirmModalEl ? new bootstrap.Modal(logoutConfirmModalEl) : null;
+      const logoutYesBtn = document.getElementById('logout-confirm-yes');
+      const logoutNoBtn = document.getElementById('logout-confirm-no');
+      let logoutConfirmResolver = null;
+
+      function askLogoutConfirm() {
+        return new Promise((resolve) => {
+          if (!logoutConfirmModal) {
+            resolve(confirm('Are you sure you want to log out?'));
+            return;
+          }
+          logoutConfirmResolver = resolve;
+          logoutConfirmModal.show();
+        });
+      }
+
+      if (logoutYesBtn) {
+        logoutYesBtn.addEventListener('click', () => {
+          if (logoutConfirmModal) logoutConfirmModal.hide();
+          if (logoutConfirmResolver) logoutConfirmResolver(true);
+          logoutConfirmResolver = null;
+        });
+      }
+
+      if (logoutNoBtn) {
+        logoutNoBtn.addEventListener('click', () => {
+          if (logoutConfirmModal) logoutConfirmModal.hide();
+          if (logoutConfirmResolver) logoutConfirmResolver(false);
+          logoutConfirmResolver = null;
+        });
+      }
+
+      function showAuthFeedback(title, message) {
+        if (!feedbackModal) {
+          alert(message || title || 'Notification');
+          return;
+        }
+        document.getElementById('auth-feedback-title').textContent = title || 'Notice';
+        document.getElementById('auth-feedback-body').textContent = message || '';
+        feedbackModal.show();
+      }
+
+      function getToken() {
+        return localStorage.getItem('nestfinder_jwt') || '';
+      }
+
+      function setToken(token) {
+        if (token) localStorage.setItem('nestfinder_jwt', token);
+      }
+
+      function clearToken() {
+        localStorage.removeItem('nestfinder_jwt');
+      }
+
+      function updateAuthNav() {
+        const isLoggedIn = !!getToken();
+        $('#nav-login-item, #nav-register-item').toggle(!isLoggedIn);
+        $('#nav-logout-item').toggle(isLoggedIn);
+      }
+
+      function openAuthModal(mode) {
+        const isLogin = mode === 'login';
+        $('#authModalTitle').text(isLogin ? 'Login' : 'Create an account');
+        $('#auth-name-group').toggle(!isLogin);
+        $('#auth-submit-btn').text(isLogin ? 'Login' : 'Register');
+        $('#auth-error').hide();
+        $('#auth-form')[0].reset();
+        const html = isLogin
+          ? "Don't have an account? <a href='#' id='auth-toggle-link'>Register</a>"
+          : "Already have an account? <a href='#' id='auth-toggle-link'>Login</a>";
+        $('#auth-toggle-text').html(html);
+        $('#authModal').modal('show');
+        $('#authModal').data('mode', mode);
+      }
+
+      function openScheduleModal() {
+        const token = getToken();
+        if (!token) {
+          openAuthModal('login');
+          return;
+        }
+        const derivedName =
+          currentProperty.name ||
+          (document.getElementById('property-name')?.textContent || '').trim();
+        const derivedId =
+          currentProperty.id ||
+          derivedName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
+
+        $('#schedule-form')[0].reset();
+        $('#schedule-property-name').val(derivedName || 'Selected property');
+        $('#scheduleModal').data('property-id', derivedId || 'custom');
+        $('#schedule-error').hide();
+        $('#schedule-success').hide();
+        $('#scheduleModal').modal('show');
+      }
+
+      $('#nav-login-link').on('click', function (e) {
+        e.preventDefault();
+        openAuthModal('login');
+      });
+
+      $('#nav-register-link').on('click', function (e) {
+        e.preventDefault();
+        openAuthModal('register');
+      });
+
+      $('#nav-logout-link').on('click', function (e) {
+        e.preventDefault();
+        askLogoutConfirm().then((ok) => {
+          if (!ok) return;
+          clearToken();
+          updateAuthNav();
+          showAuthFeedback('Logged out', 'You have been logged out successfully.');
+        });
+      });
+
+      $('#nav-schedule-link, #schedule-visit-btn').on('click', function (e) {
+        e.preventDefault();
+        openScheduleModal();
+      });
+
+      $(document).on('click', '#auth-toggle-link', function (e) {
+        e.preventDefault();
+        const currentMode = $('#authModal').data('mode') || 'login';
+        openAuthModal(currentMode === 'login' ? 'register' : 'login');
+      });
+
+      $('#auth-form').on('submit', function (e) {
+        e.preventDefault();
+        const mode = $('#authModal').data('mode') || 'login';
+        const name = $('#auth-name').val();
+        const email = $('#auth-email').val();
+        const password = $('#auth-password').val();
+        const endpoint = mode === 'login' ? '/auth/login' : '/auth/register';
+
+        $('#auth-error').hide();
+
+        $.ajax({
+          url: API_BASE + endpoint,
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({ name, email, password }),
+          success: function (res) {
+            setToken(res.token);
+            $('#authModal').modal('hide');
+            updateAuthNav();
+            const isLogin = mode === 'login';
+            showAuthFeedback(
+              isLogin ? 'Login successful' : 'Registration successful',
+              isLogin ? 'You are now logged in.' : 'Your account is ready. You are now logged in.'
+            );
+          },
+          error: function (xhr) {
+            const message =
+              (xhr.responseJSON && xhr.responseJSON.message) ||
+              xhr.statusText ||
+              'Authentication failed';
+            console.error('Auth error', { status: xhr.status, response: xhr.responseText });
+            $('#auth-error').text(message).show();
+          },
+        });
+      });
+
+      $('#schedule-form').on('submit', function (e) {
+        e.preventDefault();
+        const token = getToken();
+        if (!token) {
+          $('#schedule-error').text('You must be logged in to schedule a visit.').show();
+          return;
+        }
+
+        const payload = {
+          propertyId: $('#scheduleModal').data('property-id') || currentProperty.id || 'custom',
+          propertyName: $('#schedule-property-name').val() || currentProperty.name || 'Custom property',
+          visitDate: $('#schedule-date').val(),
+          notes: $('#schedule-notes').val(),
+        };
+
+        // Validate future datetime
+        if (!payload.visitDate || Number.isNaN(new Date(payload.visitDate).getTime())) {
+          $('#schedule-error').text('Please choose a valid date and time.').show();
+          return;
+        }
+        if (new Date(payload.visitDate).getTime() <= Date.now()) {
+          $('#schedule-error').text('Please pick a future date/time for your visit.').show();
+          return;
+        }
+
+        $('#schedule-error').hide();
+        $('#schedule-success').hide();
+
+        $.ajax({
+          url: API_BASE + '/visits',
+          method: 'POST',
+          contentType: 'application/json',
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+          data: JSON.stringify(payload),
+          success: function () {
+            $('#schedule-success').text('Your visit has been scheduled!').show();
+            $('#schedule-form')[0].reset();
+          },
+          error: function (xhr) {
+            const message = (xhr.responseJSON && xhr.responseJSON.message) || 'Could not schedule visit';
+            $('#schedule-error').text(message).show();
+          },
+        });
+      });
+
+      updateAuthNav();
     });
   </script>
 

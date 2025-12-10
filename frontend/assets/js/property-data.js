@@ -7,7 +7,7 @@ const properties = [
     name: "Nuvali Blvd. corner Jose Yulo Blvd. (Cangolf Road), Brgy. Pittland, Cabuyao, Laguna",
     category: "Villa House",
     categoryClass: "vhs",
-    price: "31,640,000",
+    price: "₱ 31,640,000",
     bedrooms: 4,
     bathrooms: 3,
     area: "328 sqm",
@@ -221,7 +221,7 @@ const properties = [
     area: "35 sqm",
     floor: "W8-11 Tower 2",
     parking: "0",
-    image: "apartment-property-04.jpeg",
+    image: "Binan Apartment.jpg",
     description: `<strong>Project</strong>: Una Apartment<br>
       <strong>Location</strong>: Brgy. Sto. Tomas, Biñan, Laguna<br>
       <strong>Unit Type</strong>: Apartment<br>
