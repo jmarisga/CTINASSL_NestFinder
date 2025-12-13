@@ -1889,6 +1889,258 @@ body {
   }
 }
 
+/* Modal Styling */
+.modal-content {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s ease-out;
+  background-color: #ffffff;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Feedback Modal (Success/Logout Confirmation) */
+.feedback-modal-content {
+  max-width: 450px;
+  background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+  border: none;
+}
+
+.feedback-modal-footer {
+  border: none;
+  background: transparent;
+  padding-top: 0;
+  padding-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.feedback-btn {
+  border-radius: 25px;
+  font-weight: 600;
+  padding: 10px 35px;
+  font-size: 0.95rem;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.feedback-btn.btn-primary {
+  background: #f35525;
+  color: white;
+  box-shadow: 0 4px 15px rgba(243, 85, 37, 0.3);
+}
+
+.feedback-btn.btn-primary:hover {
+  background: #d63f1a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(243, 85, 37, 0.4);
+}
+
+.feedback-btn.btn-secondary {
+  background-color: #e8e8e8;
+  color: #333;
+  box-shadow: none;
+}
+
+.feedback-btn.btn-secondary:hover {
+  background-color: #d8d8d8;
+  color: #000;
+  transform: translateY(-2px);
+}
+
+/* Auth Modal (Login/Register Form) */
+#authModal .modal-header {
+  background-color: #ffffff;
+  color: #333;
+  border-radius: 15px 15px 0 0;
+  border: 1px solid #e0e0e0;
+  border-bottom: none;
+  padding: 20px;
+}
+
+#authModal .modal-header .modal-title {
+  font-weight: 700;
+  font-size: 1.3rem;
+  letter-spacing: 0.5px;
+  color: #333;
+}
+
+#authModal .modal-header .btn-close {
+  background-color: transparent;
+  opacity: 0.6;
+  display: block;
+}
+
+#authModal .modal-header .btn-close:hover {
+  opacity: 1;
+}
+
+#authModal .modal-body {
+  padding: 25px;
+  color: #555;
+  background-color: #ffffff;
+}
+
+#authModal .modal-body .form-label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+#authModal .modal-body .form-control {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  transition: border-color 0.3s ease;
+}
+
+#authModal .modal-body .form-control:focus {
+  border-color: #999;
+  box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.05);
+}
+
+#authModal .modal-body .btn-primary {
+  background: #f35525;
+  border: none;
+  color: white;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+#authModal .modal-body .btn-primary:hover {
+  background: #d63f1a;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(243, 85, 37, 0.3);
+}
+
+#authModal .modal-footer {
+  border-top: 1px solid #e0e0e0;
+  padding: 15px 20px;
+  background-color: #f9f9f9;
+  border-radius: 0 0 15px 15px;
+}
+
+/* Schedule Modal */
+#scheduleModal .modal-header {
+  background-color: #ffffff;
+  color: #333;
+  border-radius: 15px 15px 0 0;
+  border: 1px solid #e0e0e0;
+  border-bottom: none;
+  padding: 20px;
+}
+
+#scheduleModal .modal-header .modal-title {
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: #333;
+}
+
+#scheduleModal .modal-header .btn-close {
+  background-color: transparent;
+  opacity: 0.6;
+}
+
+#scheduleModal .modal-header .btn-close:hover {
+  opacity: 1;
+}
+
+#scheduleModal .modal-body {
+  padding: 25px;
+  color: #555;
+}
+
+#scheduleModal .modal-body .form-label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+#scheduleModal .modal-body .form-control {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  transition: border-color 0.3s ease;
+}
+
+#scheduleModal .modal-body .form-control:focus {
+  border-color: #999;
+  box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.05);
+}
+
+#scheduleModal .modal-footer {
+  border-top: 1px solid #e0e0e0;
+  padding: 15px 20px;
+  background-color: #f9f9f9;
+  border-radius: 0 0 15px 15px;
+}
+
+#scheduleModal .modal-footer .btn {
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 10px 20px;
+  transition: all 0.3s ease;
+}
+
+#scheduleModal .modal-footer .btn-primary {
+  background: #f35525;
+  border: none;
+  color: white;
+}
+
+#scheduleModal .modal-footer .btn-primary:hover {
+  background: #d63f1a;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(243, 85, 37, 0.3);
+}
+
+#auth-error, #schedule-error {
+  border-left: 4px solid #dc3545;
+  border-radius: 5px;
+  background-color: #fff5f5;
+}
+
+#schedule-success {
+  border-left: 4px solid #28a745;
+  border-radius: 5px;
+  background-color: #f5fff5;
+}
+
+/* Modal Backdrop Enhancement */
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal.show .modal-dialog {
+  animation: modalSlideIn 0.4s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 @media (max-width: 1200px) {
   .best-deal .info-table ul li span {
     float: none;

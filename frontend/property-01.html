@@ -74,8 +74,9 @@
                       <li><a href="properties.html">Properties</a></li>
                       <li><a href="property-details.html" class="active">Property Details</a></li>
                       <li><a href="contact.html">Contact Us</a></li>
-                      <li><a href="#" id="nav-login-link">Login</a></li>
-                      <li><a href="#" id="nav-register-link">Register</a></li>
+                      <li id="nav-login-item"><a href="#" id="nav-login-link">Login</a></li>
+                      <li id="nav-register-item"><a href="#" id="nav-register-link">Register</a></li>
+                      <li id="nav-logout-item" style="display:none;"><a href="#" id="nav-logout-link">Logout</a></li>
                       <li><a href="#" id="nav-schedule-link"><i class="fa fa-calendar"></i> Schedule a visit</a></li>
                   </ul>   
                     <a class='menu-trigger'>
@@ -122,6 +123,37 @@
     </div>
   </div>
 
+  <!-- Feedback Modal: Login/Register Success -->
+  <div class="modal fade" id="authFeedbackModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content feedback-modal-content">
+        <div class="modal-body" id="auth-feedback-body" style="text-align: center; padding: 40px 30px;">
+          <h5 id="auth-feedback-title" style="margin-bottom: 15px; font-size: 1.3rem; font-weight: 700; color: #333;">Success</h5>
+          <p id="auth-feedback-message" style="margin: 0; font-size: 1.1rem; color: #666;">You are now logged in.</p>
+        </div>
+        <div class="modal-footer feedback-modal-footer">
+          <button type="button" class="btn btn-primary feedback-btn" data-bs-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logout Confirmation Modal -->
+  <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content feedback-modal-content">
+        <div class="modal-body" style="text-align: center; padding: 40px 30px;">
+          <h5 style="margin-bottom: 15px; font-size: 1.3rem; font-weight: 700; color: #333;">Confirm Logout</h5>
+          <p style="margin: 0; font-size: 1.1rem; color: #666;">Are you sure you want to log out?</p>
+        </div>
+        <div class="modal-footer feedback-modal-footer" style="justify-content: center; gap: 10px;">
+          <button type="button" class="btn btn-secondary feedback-btn" data-bs-dismiss="modal" id="logout-confirm-no">Cancel</button>
+          <button type="button" class="btn btn-primary feedback-btn" id="logout-confirm-yes">Logout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="modal fade" id="scheduleModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -147,6 +179,35 @@
             <div class="alert alert-success py-2 px-3" id="schedule-success" style="display:none;font-size:0.85rem;"></div>
             <button type="submit" class="btn btn-primary w-100">Confirm Visit</button>
           </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="authFeedbackModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content feedback-modal-content">
+        <div class="modal-body" id="auth-feedback-body" style="text-align: center; padding: 40px 30px;">
+          <h5 id="auth-feedback-title" style="margin-bottom: 15px; font-size: 1.3rem; font-weight: 700; color: #333;">Success</h5>
+          <p id="auth-feedback-message" style="margin: 0; font-size: 1.1rem; color: #666;">You are now logged in.</p>
+        </div>
+        <div class="modal-footer feedback-modal-footer">
+          <button type="button" class="btn btn-primary feedback-btn" data-bs-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content feedback-modal-content">
+        <div class="modal-body" style="text-align: center; padding: 40px 30px;">
+          <h5 style="margin-bottom: 15px; font-size: 1.3rem; font-weight: 700; color: #333;">Confirm Logout</h5>
+          <p style="margin: 0; font-size: 1.1rem; color: #666;">Are you sure you want to log out?</p>
+        </div>
+        <div class="modal-footer feedback-modal-footer" style="justify-content: center; gap: 10px;">
+          <button type="button" class="btn btn-secondary feedback-btn" data-bs-dismiss="modal" id="logout-confirm-no">Cancel</button>
+          <button type="button" class="btn btn-primary feedback-btn" id="logout-confirm-yes">Logout</button>
         </div>
       </div>
     </div>
@@ -279,136 +340,69 @@
   <script src="assets/js/owl-carousel.js"></script>
   <script src="assets/js/counter.js"></script>
   <script src="assets/js/custom.js"></script>
-
+  <script src="assets/js/auth.js"></script>
   <script>
-    // ------- Auth + Scheduling -------
-    const API_BASE = 'http://localhost:5000/api';
-
-    function getToken() {
-      return localStorage.getItem('nestfinder_jwt') || '';
-    }
-
-    function setToken(token) {
-      if (token) {
-        localStorage.setItem('nestfinder_jwt', token);
-      }
-    }
-
-    function clearToken() {
-      localStorage.removeItem('nestfinder_jwt');
-    }
-
-    function openAuthModal(mode) {
-      const isLogin = mode === 'login';
-      $('#authModalTitle').text(isLogin ? 'Login' : 'Create an account');
-      $('#auth-name-group').toggle(!isLogin);
-      $('#auth-submit-btn').text(isLogin ? 'Login' : 'Register');
-      $('#auth-error').hide();
-      $('#auth-form')[0].reset();
-      const html = isLogin
-        ? "Don't have an account? <a href='#' id='auth-toggle-link'>Register</a>"
-        : "Already have an account? <a href='#' id='auth-toggle-link'>Login</a>";
-      $('#auth-toggle-text').html(html);
-      $('#authModal').modal('show');
-      $('#authModal').data('mode', mode);
-    }
-
-    function openScheduleModal() {
-      const token = getToken();
-      if (!token) {
-        openAuthModal('login');
-        return;
-      }
-      $('#scheduleModal').modal('show');
-      $('#schedule-error').hide();
-      $('#schedule-success').hide();
-      $('#schedule-form')[0].reset();
-    }
-
-    $('#nav-login-link').on('click', function (e) {
-      e.preventDefault();
-      openAuthModal('login');
-    });
-
-    $('#nav-register-link').on('click', function (e) {
-      e.preventDefault();
-      openAuthModal('register');
-    });
-
-    $('#nav-schedule-link').on('click', function (e) {
-      e.preventDefault();
-      openScheduleModal();
-    });
-
-    $('#schedule-visit-btn').on('click', function (e) {
-      e.preventDefault();
-      openScheduleModal();
-    });
-
-    $(document).on('click', '#auth-toggle-link', function (e) {
-      e.preventDefault();
-      const currentMode = $('#authModal').data('mode') || 'login';
-      openAuthModal(currentMode === 'login' ? 'register' : 'login');
-    });
-
-    $('#auth-form').on('submit', function (e) {
-      e.preventDefault();
-      const mode = $('#authModal').data('mode') || 'login';
-      const name = $('#auth-name').val();
-      const email = $('#auth-email').val();
-      const password = $('#auth-password').val();
-      const endpoint = mode === 'login' ? '/auth/login' : '/auth/register';
-
-      $('#auth-error').hide();
-
-      $.ajax({
-        url: API_BASE + endpoint,
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({ name, email, password }),
-        success: function (res) {
-          setToken(res.token);
-          $('#authModal').modal('hide');
-        },
-        error: function (xhr) {
-          const message = (xhr.responseJSON && xhr.responseJSON.message) || 'Authentication failed';
-          $('#auth-error').text(message).show();
-        },
+    // Custom scheduling for property-01.html
+    $(document).ready(function() {
+      // Override schedule button to use specific property
+      $('#nav-schedule-link, #schedule-visit-btn').off('click').on('click', function (e) {
+        e.preventDefault();
+        const token = localStorage.getItem('nestfinder_jwt') || '';
+        if (!token) {
+          $('#nav-login-link').trigger('click');
+          return;
+        }
+        $('#schedule-property-name').val('Nuvali Blvd. corner Jose Yulo Blvd. (Cangolf Road), Brgy. Pittland, Cabuyao, Laguna');
+        $('#scheduleModal').data('property-id', 'property-01');
+        $('#schedule-error').hide();
+        $('#schedule-success').hide();
+        $('#schedule-form')[0].reset();
+        $('#scheduleModal').modal('show');
       });
-    });
 
-    $('#schedule-form').on('submit', function (e) {
-      e.preventDefault();
-      const token = getToken();
-      if (!token) {
-        $('#schedule-error').text('You must be logged in to schedule a visit.').show();
-        return;
-      }
+      // Override schedule form submit for this specific property
+      $('#schedule-form').off('submit').on('submit', function (e) {
+        e.preventDefault();
+        const token = localStorage.getItem('nestfinder_jwt') || '';
+        if (!token) {
+          $('#schedule-error').text('You must be logged in to schedule a visit.').show();
+          return;
+        }
 
-      const propertyId = 'property-01';
-      const propertyName = 'Nuvali Blvd. corner Jose Yulo Blvd. (Cangolf Road), Brgy. Pittland, Cabuyao, Laguna';
-      const visitDate = $('#schedule-date').val();
-      const notes = $('#schedule-notes').val();
+        const propertyId = 'property-01';
+        const propertyName = 'Nuvali Blvd. corner Jose Yulo Blvd. (Cangolf Road), Brgy. Pittland, Cabuyao, Laguna';
+        const visitDate = $('#schedule-date').val();
+        const notes = $('#schedule-notes').val();
 
-      $('#schedule-error').hide();
-      $('#schedule-success').hide();
+        if (!visitDate || Number.isNaN(new Date(visitDate).getTime())) {
+          $('#schedule-error').text('Please choose a valid date and time.').show();
+          return;
+        }
+        if (new Date(visitDate).getTime() <= Date.now()) {
+          $('#schedule-error').text('Please pick a future date/time for your visit.').show();
+          return;
+        }
 
-      $.ajax({
-        url: API_BASE + '/visits',
-        method: 'POST',
-        contentType: 'application/json',
-        headers: {
-          Authorization: 'Bearer ' + token,
-        },
-        data: JSON.stringify({ propertyId, propertyName, visitDate, notes }),
-        success: function () {
-          $('#schedule-success').text('Your visit has been scheduled!').show();
-          $('#schedule-form')[0].reset();
-        },
-        error: function (xhr) {
-          const message = (xhr.responseJSON && xhr.responseJSON.message) || 'Could not schedule visit';
-          $('#schedule-error').text(message).show();
-        },
+        $('#schedule-error').hide();
+        $('#schedule-success').hide();
+
+        $.ajax({
+          url: 'http://localhost:5000/api/visits',
+          method: 'POST',
+          contentType: 'application/json',
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+          data: JSON.stringify({ propertyId, propertyName, visitDate, notes }),
+          success: function () {
+            $('#schedule-success').text('Your visit has been scheduled!').show();
+            $('#schedule-form')[0].reset();
+          },
+          error: function (xhr) {
+            const message = (xhr.responseJSON && xhr.responseJSON.message) || 'Could not schedule visit';
+            $('#schedule-error').text(message).show();
+          },
+        });
       });
     });
   </script>
