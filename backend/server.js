@@ -67,6 +67,8 @@ const PORT = process.env.PORT || 5000;
 // Connect to MongoDB, then start the HTTP server
 connectDB().then(() => {
   app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`\n🚀 Server running on:`);
+    console.log(`   http://localhost:${PORT}`);
+    console.log(`   http://127.0.0.1:${PORT}\n`);
   });
 });

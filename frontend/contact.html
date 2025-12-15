@@ -126,14 +126,13 @@
 
   <div class="modal fade" id="authFeedbackModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="auth-feedback-title">Notice</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      <div class="modal-content feedback-modal-content">
+        <div class="modal-body" id="auth-feedback-body" style="text-align: center; padding: 40px 30px;">
+          <h5 id="auth-feedback-title" style="margin-bottom: 15px; font-size: 1.3rem; font-weight: 700; color: #333;">Success</h5>
+          <p id="auth-feedback-message" style="margin: 0; font-size: 1.1rem; color: #666;">You are now logged in.</p>
         </div>
-        <div class="modal-body" id="auth-feedback-body">Success</div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+        <div class="modal-footer feedback-modal-footer">
+          <button type="button" class="btn btn-primary feedback-btn" data-bs-dismiss="modal">OK</button>
         </div>
       </div>
     </div>
@@ -141,15 +140,44 @@
 
   <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content feedback-modal-content">
+        <div class="modal-body" style="text-align: center; padding: 40px 30px;">
+          <h5 style="margin-bottom: 15px; font-size: 1.3rem; font-weight: 700; color: #333;">Confirm Logout</h5>
+          <p style="margin: 0; font-size: 1.1rem; color: #666;">Are you sure you want to log out?</p>
+        </div>
+        <div class="modal-footer feedback-modal-footer" style="justify-content: center; gap: 10px;">
+          <button type="button" class="btn btn-secondary feedback-btn" data-bs-dismiss="modal" id="logout-confirm-no">Cancel</button>
+          <button type="button" class="btn btn-primary feedback-btn" id="logout-confirm-yes">Logout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="scheduleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Confirm logout</h5>
+          <h5 class="modal-title">Schedule a Visit</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">Are you sure you want to log out?</div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="logout-confirm-no">Cancel</button>
-          <button type="button" class="btn btn-primary" id="logout-confirm-yes">Logout</button>
+        <div class="modal-body">
+          <form id="schedule-form">
+            <div class="mb-3">
+              <label for="schedule-property-name" class="form-label">Selected Property</label>
+              <input type="text" class="form-control" id="schedule-property-name" readonly>
+            </div>
+            <div class="mb-3">
+              <label for="schedule-date" class="form-label">Preferred Date & Time</label>
+              <input type="datetime-local" class="form-control" id="schedule-date" required>
+            </div>
+            <div class="mb-3">
+              <label for="schedule-notes" class="form-label">Notes (optional)</label>
+              <textarea class="form-control" id="schedule-notes" rows="3" placeholder="Anything specific you would like to see or know?"></textarea>
+            </div>
+            <div class="alert alert-danger py-2 px-3" id="schedule-error" style="display:none;font-size:0.85rem;"></div>
+            <div class="alert alert-success py-2 px-3" id="schedule-success" style="display:none;font-size:0.85rem;"></div>
+            <button type="submit" class="btn btn-primary w-100">Confirm Visit</button>
+          </form>
         </div>
       </div>
     </div>
@@ -241,154 +269,7 @@
   <script src="assets/js/owl-carousel.js"></script>
   <script src="assets/js/counter.js"></script>
   <script src="assets/js/custom.js"></script>
-
-  <script>
-    (function () {
-      const API_BASE = 'http://localhost:5000/api';
-      const feedbackModalEl = document.getElementById('authFeedbackModal');
-      const feedbackModal = feedbackModalEl ? new bootstrap.Modal(feedbackModalEl) : null;
-
-      const logoutConfirmModalEl = document.getElementById('logoutConfirmModal');
-      const logoutConfirmModal = logoutConfirmModalEl ? new bootstrap.Modal(logoutConfirmModalEl) : null;
-      const logoutYesBtn = document.getElementById('logout-confirm-yes');
-      const logoutNoBtn = document.getElementById('logout-confirm-no');
-      let logoutConfirmResolver = null;
-
-      function askLogoutConfirm() {
-        return new Promise((resolve) => {
-          if (!logoutConfirmModal) {
-            resolve(confirm('Are you sure you want to log out?'));
-            return;
-          }
-          logoutConfirmResolver = resolve;
-          logoutConfirmModal.show();
-        });
-      }
-
-      if (logoutYesBtn) {
-        logoutYesBtn.addEventListener('click', () => {
-          if (logoutConfirmModal) logoutConfirmModal.hide();
-          if (logoutConfirmResolver) logoutConfirmResolver(true);
-          logoutConfirmResolver = null;
-        });
-      }
-
-      if (logoutNoBtn) {
-        logoutNoBtn.addEventListener('click', () => {
-          if (logoutConfirmModal) logoutConfirmModal.hide();
-          if (logoutConfirmResolver) logoutConfirmResolver(false);
-          logoutConfirmResolver = null;
-        });
-      }
-
-      function showAuthFeedback(title, message) {
-        if (!feedbackModal) {
-          alert(message || title || 'Notification');
-          return;
-        }
-        document.getElementById('auth-feedback-title').textContent = title || 'Notice';
-        document.getElementById('auth-feedback-body').textContent = message || '';
-        feedbackModal.show();
-      }
-
-      function getToken() {
-        return localStorage.getItem('nestfinder_jwt') || '';
-      }
-
-      function setToken(token) {
-        if (token) localStorage.setItem('nestfinder_jwt', token);
-      }
-
-      function clearToken() {
-        localStorage.removeItem('nestfinder_jwt');
-      }
-
-      function updateAuthNav() {
-        const isLoggedIn = !!getToken();
-        $('#nav-login-item, #nav-register-item').toggle(!isLoggedIn);
-        $('#nav-logout-item').toggle(isLoggedIn);
-      }
-
-      function openAuthModal(mode) {
-        const isLogin = mode === 'login';
-        $('#authModalTitle').text(isLogin ? 'Login' : 'Create an account');
-        $('#auth-name-group').toggle(!isLogin);
-        $('#auth-submit-btn').text(isLogin ? 'Login' : 'Register');
-        $('#auth-error').hide();
-        $('#auth-form')[0].reset();
-        const html = isLogin
-          ? "Don't have an account? <a href='#' id='auth-toggle-link'>Register</a>"
-          : "Already have an account? <a href='#' id='auth-toggle-link'>Login</a>";
-        $('#auth-toggle-text').html(html);
-        $('#authModal').modal('show');
-        $('#authModal').data('mode', mode);
-      }
-
-      $('#nav-login-link').on('click', function (e) {
-        e.preventDefault();
-        openAuthModal('login');
-      });
-
-      $('#nav-register-link').on('click', function (e) {
-        e.preventDefault();
-        openAuthModal('register');
-      });
-
-      $('#nav-logout-link').on('click', function (e) {
-        e.preventDefault();
-        askLogoutConfirm().then((ok) => {
-          if (!ok) return;
-          clearToken();
-          updateAuthNav();
-          showAuthFeedback('Logged out', 'You have been logged out successfully.');
-        });
-      });
-
-      $(document).on('click', '#auth-toggle-link', function (e) {
-        e.preventDefault();
-        const currentMode = $('#authModal').data('mode') || 'login';
-        openAuthModal(currentMode === 'login' ? 'register' : 'login');
-      });
-
-      $('#auth-form').on('submit', function (e) {
-        e.preventDefault();
-        const mode = $('#authModal').data('mode') || 'login';
-        const name = $('#auth-name').val();
-        const email = $('#auth-email').val();
-        const password = $('#auth-password').val();
-        const endpoint = mode === 'login' ? '/auth/login' : '/auth/register';
-
-        $('#auth-error').hide();
-
-        $.ajax({
-          url: API_BASE + endpoint,
-          method: 'POST',
-          contentType: 'application/json',
-          data: JSON.stringify({ name, email, password }),
-          success: function (res) {
-            setToken(res.token);
-            $('#authModal').modal('hide');
-            updateAuthNav();
-            const isLogin = mode === 'login';
-            showAuthFeedback(
-              isLogin ? 'Login successful' : 'Registration successful',
-              isLogin ? 'You are now logged in.' : 'Your account is ready. You are now logged in.'
-            );
-          },
-          error: function (xhr) {
-            const message =
-              (xhr.responseJSON && xhr.responseJSON.message) ||
-              xhr.statusText ||
-              'Authentication failed';
-            console.error('Auth error', { status: xhr.status, response: xhr.responseText });
-            $('#auth-error').text(message).show();
-          },
-        });
-      });
-
-      updateAuthNav();
-    })();
-  </script>
+  <script src="assets/js/auth.js"></script>
 
   </body>
 </html>
