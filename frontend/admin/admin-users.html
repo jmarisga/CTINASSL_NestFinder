@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Users</title>
+
+  <!-- CSS -->
+  <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/fontawesome.css">
+  <link rel="stylesheet" href="../assets/css/templatemo-villa-agency.css">
+  <link rel="stylesheet" href="../assets/css/owl.css">
+  <link rel="stylesheet" href="../assets/css/animate.css">
+
+</head>
+
+<body>
+
+  <!-- Preloader -->
+  <div id="js-preloader" class="js-preloader">
+    <div class="preloader-inner">
+      <span class="dot"></span>
+      <div class="dots">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN NAVBAR -->
+  <header class="header-area header-sticky">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <nav class="main-nav">
+            <a href="admin-dashboard.html" class="logo">
+              <h1>Admin Panel</h1>
+            </a>
+
+            <ul class="nav">
+              <li><a href="admin-dashboard.html">Dashboard</a></li>
+              <li><a href="admin-properties.html">Properties</a></li>
+              <li><a href="admin-users.html" class="active">Users</a></li>
+              <li><a href="admin-visits.html">Visits</a></li>
+              <li><a href="../index.html">Logout</a></li>
+            </ul>
+
+            <a class="menu-trigger"><span>Menu</span></a>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- PAGE HEADING -->
+  <div class="page-heading header-text">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <h3>Manage Users</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- USER LIST SECTION -->
+  <div class="section">
+    <div class="container mt-4">
+
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped text-center align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th>User ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody id="user-table">
+            <!-- Rows are inserted via JS -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="col-lg-12">
+        <p>© 2025 NestFinder Admin Panel — All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JS -->
+  <script src="../vendor/jquery/jquery.min.js"></script>
+  <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+  <script src="../assets/js/custom.js"></script>
+
+  <script>
+    // Temporary demo data (replace with backend API)
+    const demoUsers = [
+      { id: "U001", name: "Juan Dela Cruz", email: "juan@example.com", role: "user" },
+      { id: "U002", name: "Maria Santos", email: "maria@example.com", role: "user" },
+      { id: "U003", name: "Admin Sample", email: "admin@example.com", role: "admin" }
+    ];
+
+    // Load users into table
+    function loadUsers() {
+      const table = document.getElementById("user-table");
+      table.innerHTML = "";
+
+      demoUsers.forEach(u => {
+        table.innerHTML += `
+          <tr>
+            <td>${u.id}</td>
+            <td>${u.name}</td>
+            <td>${u.email}</td>
+            <td>${u.role}</td>
+            <td>
+              <button class="btn btn-danger btn-sm delete-user" data-id="${u.id}">Delete</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    // Delete user (frontend demo only)
+    document.addEventListener("click", (e) => {
+      if (e.target.classList.contains("delete-user")) {
+        const id = e.target.dataset.id;
+        if (confirm("Delete this user?")) {
+          console.log("DELETE USER:", id);
+          alert("Deleted (Waiting for backend API)");
+        }
+      }
+    });
+
+    // Load on page start
+    loadUsers();
+  </script>
+
+</body>
+
+</html>
