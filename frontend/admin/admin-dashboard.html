@@ -13,122 +13,234 @@
   <link rel="stylesheet" href="../assets/css/templatemo-villa-agency.css" />
   <link rel="stylesheet" href="../assets/css/owl.css" />
   <link rel="stylesheet" href="../assets/css/animate.css" />
+
+  <style>
+    /* Hide content until authenticated */
+    .admin-content { display: none; }
+    .loading-auth {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    /* Remove white box from admin name */
+    #admin-name {
+      background: transparent !important;
+      padding: 0 !important;
+      color: #fff !important;
+    }
+    /* Admin navbar fixes */
+    .main-nav .logo h1 {
+      font-size: 24px !important;
+      text-transform: uppercase;
+    }
+    .main-nav .nav li:last-child a {
+      padding: 8px 20px !important;
+      border-radius: 20px;
+      background-color: #1e1e1e;
+      color: #fff !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .main-nav .nav li:last-child a:hover {
+      background-color: #f35525;
+    }
+  </style>
 </head>
 
 <body>
-
-  <!-- Preloader -->
-  <div id="js-preloader" class="js-preloader">
-    <div class="preloader-inner">
-      <span class="dot"></span>
-      <div class="dots">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
+  <!-- Auth Loading Screen -->
+  <div id="auth-loading" class="loading-auth">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
     </div>
+    <p class="mt-3">Verifying authentication...</p>
   </div>
 
-  <!-- ADMIN NAVBAR -->
-  <header class="header-area header-sticky">
-    <div class="container">
-      <div class="row">
+  <!-- Admin Content (hidden until authenticated) -->
+  <div class="admin-content">
+    <!-- Preloader -->
+    <div id="js-preloader" class="js-preloader">
+      <div class="preloader-inner">
+        <span class="dot"></span>
+        <div class="dots">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN NAVBAR -->
+    <header class="header-area header-sticky">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+
+            <nav class="main-nav">
+              <a href="admin-dashboard.html" class="logo">
+                <h1>Admin</h1>
+              </a>
+
+              <ul class="nav">
+                <li><a href="admin-dashboard.html" class="active">Dashboard</a></li>
+                <li><a href="admin-properties.html">Properties</a></li>
+                <li><a href="admin-users.html">Users</a></li>
+                <li><a href="admin-visits.html">Visits</a></li>
+                <li><a href="#" id="logout-btn">Logout</a></li>
+              </ul>
+
+              <a class="menu-trigger">
+                <span>Menu</span>
+              </a>
+            </nav>
+
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- PAGE HEADING -->
+    <div class="page-heading header-text">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <h3>Admin Dashboard</h3>
+            <p class="text-white">Welcome, <span id="admin-name">Admin</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD CARDS -->
+    <div class="container mt-5 mb-5">
+
+      <div class="row g-4">
+
+        <!-- Total Users -->
+        <div class="col-lg-4 col-md-6">
+          <div class="p-4 bg-light border rounded shadow-sm text-center">
+            <i class="fa fa-users fa-2x mb-3 text-primary"></i>
+            <h5>Total Users</h5>
+            <h2 id="total-users" class="mt-2">
+              <span class="spinner-border spinner-border-sm"></span>
+            </h2>
+          </div>
+        </div>
+
+        <!-- Total Properties -->
+        <div class="col-lg-4 col-md-6">
+          <div class="p-4 bg-light border rounded shadow-sm text-center">
+            <i class="fa fa-home fa-2x mb-3 text-success"></i>
+            <h5>Total Properties</h5>
+            <h2 id="total-properties" class="mt-2">
+              <span class="spinner-border spinner-border-sm"></span>
+            </h2>
+          </div>
+        </div>
+
+        <!-- Total Visits -->
+        <div class="col-lg-4 col-md-6">
+          <div class="p-4 bg-light border rounded shadow-sm text-center">
+            <i class="fa fa-calendar-check fa-2x mb-3 text-warning"></i>
+            <h5>Total Scheduled Visits</h5>
+            <h2 id="total-visits" class="mt-2">
+              <span class="spinner-border spinner-border-sm"></span>
+            </h2>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="row mt-5">
         <div class="col-12">
-
-          <nav class="main-nav">
-            <a href="admin-dashboard.html" class="logo">
-              <h1>Admin Panel</h1>
-            </a>
-
-            <ul class="nav">
-              <li><a href="admin-dashboard.html" class="active">Dashboard</a></li>
-              <li><a href="admin-properties.html">Properties</a></li>
-              <li><a href="admin-users.html">Users</a></li>
-              <li><a href="admin-visits.html">Visits</a></li>
-              <li><a href="../index.html">Logout</a></li>
-            </ul>
-
-            <a class="menu-trigger">
-              <span>Menu</span>
-            </a>
-          </nav>
-
+          <h4 class="mb-3">Quick Actions</h4>
+        </div>
+        <div class="col-md-4 mb-3">
+          <a href="admin-properties.html" class="btn btn-primary w-100 py-3">
+            <i class="fa fa-plus me-2"></i>Manage Properties
+          </a>
+        </div>
+        <div class="col-md-4 mb-3">
+          <a href="admin-users.html" class="btn btn-success w-100 py-3">
+            <i class="fa fa-user-cog me-2"></i>Manage Users
+          </a>
+        </div>
+        <div class="col-md-4 mb-3">
+          <a href="admin-visits.html" class="btn btn-warning w-100 py-3">
+            <i class="fa fa-calendar me-2"></i>View Visits
+          </a>
         </div>
       </div>
-    </div>
-  </header>
 
-  <!-- PAGE HEADING -->
-  <div class="page-heading header-text">
-    <div class="container">
-      <div class="row">
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="container">
         <div class="col-lg-12">
-          <h3>Admin Dashboard</h3>
+          <p>© 2025 NestFinder Admin Panel — All rights reserved.</p>
         </div>
       </div>
-    </div>
+    </footer>
   </div>
-
-  <!-- DASHBOARD CARDS -->
-  <div class="container mt-5 mb-5">
-
-    <div class="row g-4">
-
-      <!-- Total Users -->
-      <div class="col-lg-4 col-md-6">
-        <div class="p-4 bg-light border rounded shadow-sm text-center">
-          <h5>Total Users</h5>
-          <h2 id="total-users" class="mt-2">0</h2>
-        </div>
-      </div>
-
-      <!-- Total Properties -->
-      <div class="col-lg-4 col-md-6">
-        <div class="p-4 bg-light border rounded shadow-sm text-center">
-          <h5>Total Properties</h5>
-          <h2 id="total-properties" class="mt-2">0</h2>
-        </div>
-      </div>
-
-      <!-- Total Visits -->
-      <div class="col-lg-4 col-md-6">
-        <div class="p-4 bg-light border rounded shadow-sm text-center">
-          <h5>Total Scheduled Visits</h5>
-          <h2 id="total-visits" class="mt-2">0</h2>
-        </div>
-      </div>
-
-    </div>
-
-  </div>
-
-  <!-- FOOTER -->
-  <footer>
-    <div class="container">
-      <div class="col-lg-12">
-        <p>© 2025 NestFinder Admin Panel — All rights reserved.</p>
-      </div>
-    </div>
-  </footer>
 
   <!-- JS -->
   <script src="../vendor/jquery/jquery.min.js"></script>
   <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
   <script src="../assets/js/custom.js"></script>
+  <script src="../assets/js/property-data.js"></script>
+  <script src="../assets/js/admin-auth.js"></script>
 
   <script>
-    // TEMPORARY DATA — replace with backend API when ready
-    const dashboardData = {
-      users: 18,
-      properties: 12,
-      visits: 7
-    };
+    // Protect page and load data
+    document.addEventListener("DOMContentLoaded", async () => {
+      // Check authentication
+      if (!AdminAuth.protectPage()) {
+        return;
+      }
 
-    // Load dashboard numbers
-    document.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("total-users").textContent = dashboardData.users;
-      document.getElementById("total-properties").textContent = dashboardData.properties;
-      document.getElementById("total-visits").textContent = dashboardData.visits;
+      // Show admin content
+      document.getElementById('auth-loading').style.display = 'none';
+      document.querySelector('.admin-content').style.display = 'block';
+
+      // Display admin name
+      const user = AdminAuth.getUser();
+      if (user && user.name) {
+        document.getElementById('admin-name').textContent = user.name;
+      }
+
+      // Load dashboard stats from API
+      try {
+        const response = await AdminAuth.apiRequest('/admin/stats');
+        const stats = await response.json();
+
+        // Count local properties from property-data.js
+        const localPropertiesCount = typeof properties !== 'undefined' ? properties.length : 0;
+        const totalProperties = (stats.properties || 0) + localPropertiesCount;
+
+        document.getElementById("total-users").textContent = stats.users || 0;
+        document.getElementById("total-properties").textContent = totalProperties;
+        document.getElementById("total-visits").textContent = stats.visits || 0;
+      } catch (error) {
+        console.error('Failed to load stats:', error);
+        // Still show local properties count on error
+        const localPropertiesCount = typeof properties !== 'undefined' ? properties.length : 0;
+        document.getElementById("total-users").textContent = 'Error';
+        document.getElementById("total-properties").textContent = localPropertiesCount;
+        document.getElementById("total-visits").textContent = 'Error';
+      }
+
+      // Logout handler
+      document.getElementById('logout-btn').addEventListener('click', (e) => {
+        e.preventDefault();
+        if (confirm('Are you sure you want to logout?')) {
+          AdminAuth.logout();
+        }
+      });
     });
   </script>
 

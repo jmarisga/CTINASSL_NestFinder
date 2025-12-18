@@ -21,6 +21,10 @@ const visitSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    time: {
+      type: String,
+      trim: true,
+    },
     notes: {
       type: String,
       trim: true,

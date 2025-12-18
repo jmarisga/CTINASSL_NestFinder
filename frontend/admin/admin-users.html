@@ -14,138 +14,302 @@
   <link rel="stylesheet" href="../assets/css/owl.css">
   <link rel="stylesheet" href="../assets/css/animate.css">
 
+  <style>
+    .admin-content { display: none; }
+    .loading-auth {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    /* Admin navbar fixes */
+    .main-nav .logo h1 {
+      font-size: 24px !important;
+      text-transform: uppercase;
+    }
+    .main-nav .nav li:last-child a {
+      padding: 8px 20px !important;
+      border-radius: 20px;
+      background-color: #1e1e1e;
+      color: #fff !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .main-nav .nav li:last-child a:hover {
+      background-color: #f35525;
+    }
+    .badge-admin { background-color: #dc3545; }
+    .badge-user { background-color: #198754; }
+  </style>
 </head>
 
 <body>
-
-  <!-- Preloader -->
-  <div id="js-preloader" class="js-preloader">
-    <div class="preloader-inner">
-      <span class="dot"></span>
-      <div class="dots">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
+  <!-- Auth Loading Screen -->
+  <div id="auth-loading" class="loading-auth">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
     </div>
+    <p class="mt-3">Verifying authentication...</p>
   </div>
 
-  <!-- ADMIN NAVBAR -->
-  <header class="header-area header-sticky">
-    <div class="container">
-      <div class="row">
-        <div class="col-12">
-          <nav class="main-nav">
-            <a href="admin-dashboard.html" class="logo">
-              <h1>Admin Panel</h1>
-            </a>
-
-            <ul class="nav">
-              <li><a href="admin-dashboard.html">Dashboard</a></li>
-              <li><a href="admin-properties.html">Properties</a></li>
-              <li><a href="admin-users.html" class="active">Users</a></li>
-              <li><a href="admin-visits.html">Visits</a></li>
-              <li><a href="../index.html">Logout</a></li>
-            </ul>
-
-            <a class="menu-trigger"><span>Menu</span></a>
-          </nav>
+  <!-- Admin Content -->
+  <div class="admin-content">
+    <!-- Preloader -->
+    <div id="js-preloader" class="js-preloader">
+      <div class="preloader-inner">
+        <span class="dot"></span>
+        <div class="dots">
+          <span></span>
+          <span></span>
+          <span></span>
         </div>
       </div>
     </div>
-  </header>
 
-  <!-- PAGE HEADING -->
-  <div class="page-heading header-text">
-    <div class="container">
-      <div class="row">
+    <!-- ADMIN NAVBAR -->
+    <header class="header-area header-sticky">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <nav class="main-nav">
+              <a href="admin-dashboard.html" class="logo">
+                <h1>Admin</h1>
+              </a>
+
+              <ul class="nav">
+                <li><a href="admin-dashboard.html">Dashboard</a></li>
+                <li><a href="admin-properties.html">Properties</a></li>
+                <li><a href="admin-users.html" class="active">Users</a></li>
+                <li><a href="admin-visits.html">Visits</a></li>
+                <li><a href="#" id="logout-btn">Logout</a></li>
+              </ul>
+
+              <a class="menu-trigger"><span>Menu</span></a>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- PAGE HEADING -->
+    <div class="page-heading header-text">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <h3>Manage Users</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- USER LIST SECTION -->
+    <div class="section">
+      <div class="container mt-4">
+        
+        <!-- Loading indicator -->
+        <div id="users-loading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="mt-2">Loading users...</p>
+        </div>
+
+        <!-- Error message -->
+        <div id="users-error" class="alert alert-danger d-none"></div>
+
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped text-center align-middle" id="users-table-container" style="display: none;">
+            <thead class="table-dark">
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+
+            <tbody id="user-table">
+              <!-- Rows are inserted via JS -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="container">
         <div class="col-lg-12">
-          <h3>Manage Users</h3>
+          <p>© 2025 NestFinder Admin Panel — All rights reserved.</p>
         </div>
       </div>
-    </div>
+    </footer>
   </div>
-
-  <!-- USER LIST SECTION -->
-  <div class="section">
-    <div class="container mt-4">
-
-      <div class="table-responsive">
-        <table class="table table-bordered table-striped text-center align-middle">
-          <thead class="table-dark">
-            <tr>
-              <th>User ID</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-
-          <tbody id="user-table">
-            <!-- Rows are inserted via JS -->
-          </tbody>
-        </table>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- FOOTER -->
-  <footer>
-    <div class="container">
-      <div class="col-lg-12">
-        <p>© 2025 NestFinder Admin Panel — All rights reserved.</p>
-      </div>
-    </div>
-  </footer>
 
   <!-- JS -->
   <script src="../vendor/jquery/jquery.min.js"></script>
   <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
   <script src="../assets/js/custom.js"></script>
+  <script src="../assets/js/admin-auth.js"></script>
 
   <script>
-    // Temporary demo data (replace with backend API)
-    const demoUsers = [
-      { id: "U001", name: "Juan Dela Cruz", email: "juan@example.com", role: "user" },
-      { id: "U002", name: "Maria Santos", email: "maria@example.com", role: "user" },
-      { id: "U003", name: "Admin Sample", email: "admin@example.com", role: "admin" }
-    ];
+    // Escape HTML to prevent XSS
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
 
-    // Load users into table
-    function loadUsers() {
-      const table = document.getElementById("user-table");
-      table.innerHTML = "";
-
-      demoUsers.forEach(u => {
-        table.innerHTML += `
-          <tr>
-            <td>${u.id}</td>
-            <td>${u.name}</td>
-            <td>${u.email}</td>
-            <td>${u.role}</td>
-            <td>
-              <button class="btn btn-danger btn-sm delete-user" data-id="${u.id}">Delete</button>
-            </td>
-          </tr>
-        `;
+    // Format date
+    function formatDate(dateString) {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
       });
     }
 
-    // Delete user (frontend demo only)
-    document.addEventListener("click", (e) => {
-      if (e.target.classList.contains("delete-user")) {
-        const id = e.target.dataset.id;
-        if (confirm("Delete this user?")) {
-          console.log("DELETE USER:", id);
-          alert("Deleted (Waiting for backend API)");
-        }
-      }
-    });
+    // Load users from API
+    async function loadUsers() {
+      const loadingEl = document.getElementById('users-loading');
+      const errorEl = document.getElementById('users-error');
+      const tableContainer = document.getElementById('users-table-container');
+      const tableBody = document.getElementById('user-table');
 
-    // Load on page start
-    loadUsers();
+      try {
+        const response = await AdminAuth.apiRequest('/admin/users');
+        
+        if (!response.ok) {
+          throw new Error('Failed to load users');
+        }
+
+        const users = await response.json();
+
+        // Clear table
+        tableBody.innerHTML = '';
+
+        // Populate table
+        users.forEach(user => {
+          const roleClass = user.role === 'admin' ? 'badge-admin' : 'badge-user';
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td><small>${escapeHtml(user._id.slice(-8))}</small></td>
+            <td>${escapeHtml(user.name)}</td>
+            <td>${escapeHtml(user.email)}</td>
+            <td>
+              <span class="badge ${roleClass}">${escapeHtml(user.role)}</span>
+            </td>
+            <td>${formatDate(user.createdAt)}</td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary toggle-role-btn" data-id="${user._id}" data-role="${user.role}">
+                <i class="fa fa-exchange-alt"></i> Toggle Role
+              </button>
+              <button class="btn btn-danger btn-sm delete-user" data-id="${user._id}" data-name="${escapeHtml(user.name)}">
+                <i class="fa fa-trash"></i>
+              </button>
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+
+        // Show table
+        loadingEl.style.display = 'none';
+        tableContainer.style.display = 'table';
+
+      } catch (error) {
+        console.error('Load users error:', error);
+        loadingEl.style.display = 'none';
+        errorEl.textContent = error.message || 'Failed to load users';
+        errorEl.classList.remove('d-none');
+      }
+    }
+
+    // Delete user
+    async function deleteUser(userId, userName) {
+      if (!confirm(`Are you sure you want to delete user "${userName}"?`)) {
+        return;
+      }
+
+      try {
+        const response = await AdminAuth.apiRequest(`/admin/users/${userId}`, {
+          method: 'DELETE'
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.message || 'Failed to delete user');
+        }
+
+        alert('User deleted successfully');
+        loadUsers(); // Reload table
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+
+    // Toggle user role
+    async function toggleRole(userId, currentRole) {
+      const newRole = currentRole === 'admin' ? 'user' : 'admin';
+
+      if (!confirm(`Change user role to "${newRole}"?`)) {
+        return;
+      }
+
+      try {
+        const response = await AdminAuth.apiRequest(`/admin/users/${userId}/role`, {
+          method: 'PATCH',
+          body: JSON.stringify({ role: newRole })
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.message || 'Failed to update role');
+        }
+
+        alert('Role updated successfully');
+        loadUsers(); // Reload table
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check authentication
+      if (!AdminAuth.protectPage()) {
+        return;
+      }
+
+      // Show admin content
+      document.getElementById('auth-loading').style.display = 'none';
+      document.querySelector('.admin-content').style.display = 'block';
+
+      // Load users
+      loadUsers();
+
+      // Logout handler
+      document.getElementById('logout-btn').addEventListener('click', (e) => {
+        e.preventDefault();
+        if (confirm('Are you sure you want to logout?')) {
+          AdminAuth.logout();
+        }
+      });
+
+      // Event delegation for delete and toggle buttons
+      document.getElementById('user-table').addEventListener('click', (e) => {
+        const deleteBtn = e.target.closest('.delete-user');
+        const toggleBtn = e.target.closest('.toggle-role-btn');
+
+        if (deleteBtn) {
+          deleteUser(deleteBtn.dataset.id, deleteBtn.dataset.name);
+        } else if (toggleBtn) {
+          toggleRole(toggleBtn.dataset.id, toggleBtn.dataset.role);
+        }
+      });
+    });
   </script>
 
 </body>

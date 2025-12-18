@@ -6,6 +6,8 @@ import cors from 'cors';
 // Route modules
 import authRoutes from './src/routes/auth.js';
 import visitRoutes from './src/routes/visits.js';
+import adminRoutes from './src/routes/admin.js';
+import propertyRoutes from './src/routes/properties.js';
 // Middleware
 import { globalLimiter, authLimiter } from './src/middleware/rateLimiter.js';
 // DB config
@@ -55,6 +57,8 @@ app.use(express.json());
 app.use(globalLimiter);
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/visits', visitRoutes);
+app.use('/api/admin', authLimiter, adminRoutes);
+app.use('/api/properties', propertyRoutes);
 
 // Simple health‑check endpoint
 app.get('/', (req, res) => {
