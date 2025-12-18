@@ -13,164 +13,298 @@
   <link rel="stylesheet" href="../assets/css/templatemo-villa-agency.css" />
   <link rel="stylesheet" href="../assets/css/owl.css" />
   <link rel="stylesheet" href="../assets/css/animate.css" />
+
+  <style>
+    .admin-content { display: none; }
+    .loading-auth {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    /* Admin navbar fixes */
+    .main-nav .logo h1 {
+      font-size: 24px !important;
+      text-transform: uppercase;
+    }
+    .main-nav .nav li:last-child a {
+      padding: 8px 20px !important;
+      border-radius: 20px;
+      background-color: #1e1e1e;
+      color: #fff !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .main-nav .nav li:last-child a:hover {
+      background-color: #f35525;
+    }
+  </style>
 </head>
 
 <body>
-  <!-- Preloader -->
-  <div id="js-preloader" class="js-preloader">
-    <div class="preloader-inner">
-      <span class="dot"></span>
-      <div class="dots">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
+  <!-- Auth Loading Screen -->
+  <div id="auth-loading" class="loading-auth">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
     </div>
+    <p class="mt-3">Verifying authentication...</p>
   </div>
 
-  <!-- ADMIN NAVBAR -->
-  <header class="header-area header-sticky">
-    <div class="container">
-      <div class="row">
-        <div class="col-12">
-          <nav class="main-nav">
-
-            <a href="admin-dashboard.html" class="logo">
-              <h1>Admin Panel</h1>
-            </a>
-
-            <ul class="nav">
-              <li><a href="admin-dashboard.html">Dashboard</a></li>
-              <li><a href="admin-properties.html">Properties</a></li>
-              <li><a href="admin-users.html">Users</a></li>
-              <li><a href="admin-visits.html" class="active">Visits</a></li>
-              <li><a href="../index.html">Logout</a></li>
-            </ul>
-
-            <a class="menu-trigger">
-              <span>Menu</span>
-            </a>
-          </nav>
+  <!-- Admin Content -->
+  <div class="admin-content">
+    <!-- Preloader -->
+    <div id="js-preloader" class="js-preloader">
+      <div class="preloader-inner">
+        <span class="dot"></span>
+        <div class="dots">
+          <span></span>
+          <span></span>
+          <span></span>
         </div>
       </div>
     </div>
-  </header>
 
-  <!-- PAGE HEADER -->
-  <div class="page-heading header-text">
-    <div class="container">
-      <div class="row">
+    <!-- ADMIN NAVBAR -->
+    <header class="header-area header-sticky">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <nav class="main-nav">
+              <a href="admin-dashboard.html" class="logo">
+                <h1>Admin</h1>
+              </a>
+
+              <ul class="nav">
+                <li><a href="admin-dashboard.html">Dashboard</a></li>
+                <li><a href="admin-properties.html">Properties</a></li>
+                <li><a href="admin-users.html">Users</a></li>
+                <li><a href="admin-visits.html" class="active">Visits</a></li>
+                <li><a href="#" id="logout-btn">Logout</a></li>
+              </ul>
+
+              <a class="menu-trigger">
+                <span>Menu</span>
+              </a>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- PAGE HEADER -->
+    <div class="page-heading header-text">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <h3>Scheduled Visits</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISITS TABLE -->
+    <div class="section">
+      <div class="container mt-4">
+        
+        <!-- Loading indicator -->
+        <div id="visits-loading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="mt-2">Loading visits...</p>
+        </div>
+
+        <!-- Error message -->
+        <div id="visits-error" class="alert alert-danger d-none"></div>
+
+        <!-- Empty state -->
+        <div id="visits-empty" class="text-center py-5 d-none">
+          <i class="fa fa-calendar-times fa-3x text-muted mb-3"></i>
+          <p class="text-muted">No scheduled visits found.</p>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped text-center align-middle" id="visits-table-container" style="display: none;">
+            <thead class="table-dark">
+              <tr>
+                <th>ID</th>
+                <th>User</th>
+                <th>Email</th>
+                <th>Property</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody id="visits-table">
+              <!-- Data from JS -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="container">
         <div class="col-lg-12">
-          <h3>Scheduled Visits</h3>
+          <p>© 2025 NestFinder Admin Panel — All rights reserved.</p>
         </div>
       </div>
-    </div>
+    </footer>
   </div>
-
-  <!-- VISITS TABLE -->
-  <div class="section">
-    <div class="container mt-4">
-
-      <div class="table-responsive">
-        <table class="table table-bordered table-striped text-center align-middle">
-          <thead class="table-dark">
-            <tr>
-              <th>Visit ID</th>
-              <th>User Name</th>
-              <th>Email</th>
-              <th>Property</th>
-              <th>Date</th>
-              <th>Time</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-
-          <tbody id="visits-table">
-            <!-- Data from JS -->
-          </tbody>
-        </table>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- FOOTER -->
-  <footer>
-    <div class="container">
-      <div class="col-lg-12">
-        <p>© 2025 NestFinder Admin Panel — All rights reserved.</p>
-      </div>
-    </div>
-  </footer>
 
   <!-- JS -->
   <script src="../vendor/jquery/jquery.min.js"></script>
   <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
   <script src="../assets/js/custom.js"></script>
+  <script src="../assets/js/admin-auth.js"></script>
 
   <script>
-    // TEMPORARY SAMPLE DATA
-    const demoVisits = [
-      {
-        id: "V001",
-        user: "Juan Dela Cruz",
-        email: "juan@example.com",
-        property: "Villa House - Nuvali",
-        date: "2025-01-12",
-        time: "10:00 AM",
-        status: "Pending"
-      },
-      {
-        id: "V002",
-        user: "Maria Santos",
-        email: "maria@example.com",
-        property: "Luxury Condo - Makati",
-        date: "2025-01-15",
-        time: "2:00 PM",
-        status: "Approved"
-      }
-    ];
+    // Escape HTML to prevent XSS
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text || '';
+      return div.innerHTML;
+    }
 
-    // LOAD VISITS
-    function loadVisits() {
-      const table = document.getElementById("visits-table");
-      table.innerHTML = "";
-
-      demoVisits.forEach(v => {
-        table.innerHTML += `
-          <tr>
-            <td>${v.id}</td>
-            <td>${v.user}</td>
-            <td>${v.email}</td>
-            <td>${v.property}</td>
-            <td>${v.date}</td>
-            <td>${v.time}</td>
-            <td>${v.status}</td>
-            <td>
-              <button class="btn btn-danger btn-sm delete-visit" data-id="${v.id}">
-                Delete
-              </button>
-            </td>
-          </tr>
-        `;
+    // Format date
+    function formatDate(dateString) {
+      if (!dateString) return 'N/A';
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
       });
     }
 
-    // DELETE VISIT (Frontend demo)
-    document.addEventListener("click", (e) => {
-      if (e.target.classList.contains("delete-visit")) {
-        const id = e.target.dataset.id;
+    // Format time from date
+    function formatTime(dateString) {
+      if (!dateString) return 'N/A';
+      return new Date(dateString).toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
+    }
 
-        if (confirm("Delete this scheduled visit?")) {
-          console.log("DELETE VISIT:", id);
-          alert("Visit deleted (Waiting for backend API)");
+    // Load visits from API
+    async function loadVisits() {
+      const loadingEl = document.getElementById('visits-loading');
+      const errorEl = document.getElementById('visits-error');
+      const emptyEl = document.getElementById('visits-empty');
+      const tableContainer = document.getElementById('visits-table-container');
+      const tableBody = document.getElementById('visits-table');
+
+      try {
+        const response = await AdminAuth.apiRequest('/admin/visits');
+        
+        if (!response.ok) {
+          throw new Error('Failed to load visits');
         }
-      }
-    });
 
-    // Start
-    loadVisits();
+        const visits = await response.json();
+
+        // Clear table
+        tableBody.innerHTML = '';
+        loadingEl.style.display = 'none';
+
+        if (visits.length === 0) {
+          emptyEl.classList.remove('d-none');
+          return;
+        }
+
+        // Populate table
+        visits.forEach(visit => {
+          const userName = visit.user ? visit.user.name : 'Unknown';
+          const userEmail = visit.user ? visit.user.email : 'N/A';
+          const propertyName = visit.propertyName || 'Unknown Property';
+          const visitTime = visit.time || formatTime(visit.visitDate);
+
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td><small>${escapeHtml(visit._id.slice(-8))}</small></td>
+            <td>${escapeHtml(userName)}</td>
+            <td>${escapeHtml(userEmail)}</td>
+            <td>${escapeHtml(propertyName)}</td>
+            <td>${formatDate(visit.date || visit.visitDate)}</td>
+            <td>${escapeHtml(visitTime)}</td>
+            <td>
+              <button class="btn btn-danger btn-sm delete-visit" data-id="${visit._id}">
+                <i class="fa fa-trash"></i> Delete
+              </button>
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+
+        // Show table
+        tableContainer.style.display = 'table';
+
+      } catch (error) {
+        console.error('Load visits error:', error);
+        loadingEl.style.display = 'none';
+        errorEl.textContent = error.message || 'Failed to load visits';
+        errorEl.classList.remove('d-none');
+      }
+    }
+
+    // Delete visit
+    async function deleteVisit(visitId) {
+      if (!confirm('Are you sure you want to delete this scheduled visit?')) {
+        return;
+      }
+
+      try {
+        const response = await AdminAuth.apiRequest(`/admin/visits/${visitId}`, {
+          method: 'DELETE'
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.message || 'Failed to delete visit');
+        }
+
+        alert('Visit deleted successfully');
+        loadVisits();
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check authentication
+      if (!AdminAuth.protectPage()) {
+        return;
+      }
+
+      // Show admin content
+      document.getElementById('auth-loading').style.display = 'none';
+      document.querySelector('.admin-content').style.display = 'block';
+
+      // Load visits
+      loadVisits();
+
+      // Logout handler
+      document.getElementById('logout-btn').addEventListener('click', (e) => {
+        e.preventDefault();
+        if (confirm('Are you sure you want to logout?')) {
+          AdminAuth.logout();
+        }
+      });
+
+      // Event delegation for delete
+      document.getElementById('visits-table').addEventListener('click', (e) => {
+        const deleteBtn = e.target.closest('.delete-visit');
+
+        if (deleteBtn) {
+          deleteVisit(deleteBtn.dataset.id);
+        }
+      });
+    });
   </script>
 
 </body>

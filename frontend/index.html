@@ -526,20 +526,95 @@
   <script src="assets/js/property-data.js"></script>
   <script src="assets/js/auth.js"></script>
   <script>
-    // Render properties from property-data.js (only first 6 for homepage)
-    document.addEventListener('DOMContentLoaded', function() {
+    const API_BASE = 'http://localhost:5000/api';
+
+    // Get category class for filtering
+    function getCategoryClass(category) {
+      const map = {
+        'Apartment': 'apt',
+        'House': 'hou',
+        'Villa House': 'vhs'
+      };
+      return map[category] || 'hou';
+    }
+
+    // Get image URL (handle both local and external URLs)
+    function getImageUrl(image) {
+      if (!image) return 'assets/images/placeholder.jpg';
+      if (image.startsWith('http://') || image.startsWith('https://')) {
+        return image;
+      }
+      return `assets/images/${image}`;
+    }
+
+    // Helper function to build URL parameters
+    function buildPropertyURL(property) {
+      const params = new URLSearchParams({
+        id: property.id || property._id,
+        name: property.name,
+        category: property.category || property.type,
+        price: property.price,
+        bedrooms: property.bedrooms,
+        bathrooms: property.bathrooms,
+        area: property.area,
+        floor: property.floor || 'N/A',
+        parking: property.parking || 'N/A',
+        image: property.image,
+        description: property.description || ''
+      });
+      return params.toString();
+    }
+
+    // Render properties from API + local data (only first 6 for homepage)
+    document.addEventListener('DOMContentLoaded', async function() {
       const propertiesContainer = document.querySelector('.properties .container .row');
-      const properties = window.propertyData.getAllProperties().slice(0, 6);
+      
+      // Get local hardcoded properties
+      let localProperties = [];
+      if (window.propertyData && window.propertyData.getAllProperties) {
+        localProperties = window.propertyData.getAllProperties();
+      }
+
+      // Fetch properties from API
+      let apiProperties = [];
+      try {
+        const response = await fetch(`${API_BASE}/properties`);
+        if (response.ok) {
+          const data = await response.json();
+          apiProperties = data.map(p => ({
+            id: p._id,
+            name: p.name,
+            category: p.type,
+            categoryClass: getCategoryClass(p.type),
+            price: p.price,
+            bedrooms: p.bedrooms,
+            bathrooms: p.bathrooms,
+            area: p.area,
+            floor: 'N/A',
+            parking: 'N/A',
+            image: p.image,
+            description: p.description || '',
+            fromAPI: true
+          }));
+        }
+      } catch (error) {
+        console.log('API not available, using local data only');
+      }
+
+      // Combine and get first 6
+      const allProperties = [...apiProperties, ...localProperties].slice(0, 6);
       
       // Clear existing properties
       propertiesContainer.innerHTML = '';
       
       // Render each property
-      properties.forEach(property => {
+      allProperties.forEach(property => {
         const propertyHTML = `
           <div class="col-lg-4 col-md-6">
             <div class="item" data-property-id="${property.id}">
-              <a href="property-details.html?${buildPropertyURL(property)}"><img src="assets/images/${property.image}" alt=""></a>
+              <a href="property-details.html?${buildPropertyURL(property)}">
+                <img src="${getImageUrl(property.image)}" alt="${property.name}" onerror="this.src='assets/images/placeholder.jpg'">
+              </a>
               <span class="category">${property.category}</span>
               <h6>${property.price}</h6>
               <h4><a href="property-details.html?${buildPropertyURL(property)}">${property.name}</a></h4>
@@ -559,22 +634,6 @@
         propertiesContainer.innerHTML += propertyHTML;
       });
     });
-    
-    // Helper function to build URL parameters
-    function buildPropertyURL(property) {
-      const params = new URLSearchParams({
-        name: property.name,
-        category: property.category,
-        price: property.price,
-        bedrooms: property.bedrooms,
-        bathrooms: property.bathrooms,
-        area: property.area,
-        floor: property.floor,
-        parking: property.parking,
-        image: property.image
-      });
-      return params.toString();
-    }
   </script>
 
   <script>

@@ -248,34 +248,96 @@
   <script src="assets/js/property-data.js"></script>
   <script src="assets/js/auth.js"></script>
   <script>
+    const API_BASE = 'http://localhost:5000/api';
+
     // Function to build URL parameters for property details
     function buildPropertyURL(property) {
       const params = new URLSearchParams({
-        id: property.id,
+        id: property.id || property._id,
         name: property.name,
-        category: property.category,
+        category: property.category || property.type,
         price: property.price,
         bedrooms: property.bedrooms,
         bathrooms: property.bathrooms,
         area: property.area,
-        floor: property.floor,
-        parking: property.parking,
+        floor: property.floor || 'N/A',
+        parking: property.parking || 'N/A',
         image: property.image,
-        description: property.description
+        description: property.description || ''
       });
       return params.toString();
     }
+
+    // Get category class for filtering
+    function getCategoryClass(category) {
+      const map = {
+        'Apartment': 'apt',
+        'House': 'hou',
+        'Villa House': 'vhs'
+      };
+      return map[category] || 'hou';
+    }
+
+    // Get image URL (handle both local and external URLs)
+    function getImageUrl(image) {
+      if (!image) return 'assets/images/placeholder.jpg';
+      if (image.startsWith('http://') || image.startsWith('https://')) {
+        return image;
+      }
+      return `assets/images/${image}`;
+    }
     
     // Load and display properties
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       const container = document.querySelector('.properties-box');
-      const properties = window.propertyData.getAllProperties();
       
-      container.innerHTML = properties.map(p => `
+      // Get local hardcoded properties
+      let localProperties = [];
+      if (window.propertyData && window.propertyData.getAllProperties) {
+        localProperties = window.propertyData.getAllProperties();
+      }
+
+      // Fetch properties from API
+      let apiProperties = [];
+      try {
+        const response = await fetch(`${API_BASE}/properties`);
+        if (response.ok) {
+          const data = await response.json();
+          // Map API properties to match local format
+          apiProperties = data.map(p => ({
+            id: p._id,
+            name: p.name,
+            category: p.type,
+            categoryClass: getCategoryClass(p.type),
+            price: p.price,
+            bedrooms: p.bedrooms,
+            bathrooms: p.bathrooms,
+            area: p.area,
+            floor: 'N/A',
+            parking: 'N/A',
+            image: p.image,
+            description: p.description || '',
+            location: p.location,
+            fromAPI: true
+          }));
+        }
+      } catch (error) {
+        console.log('API not available, using local data only');
+      }
+
+      // Combine both sources (API properties first)
+      const allProperties = [...apiProperties, ...localProperties];
+      
+      if (allProperties.length === 0) {
+        container.innerHTML = '<div class="col-12 text-center py-5"><p>No properties available.</p></div>';
+        return;
+      }
+
+      container.innerHTML = allProperties.map(p => `
         <div class="col-lg-4 col-md-6 properties-items ${p.categoryClass}">
           <div class="item" data-property-id="${p.id}">
             <a href="property-details.html?${buildPropertyURL(p)}">
-              <img src="assets/images/${p.image}" alt="">
+              <img src="${getImageUrl(p.image)}" alt="${p.name}" onerror="this.src='assets/images/placeholder.jpg'">
             </a>
             <span class="category">${p.category}</span>
             <h6>${p.price}</h6>
