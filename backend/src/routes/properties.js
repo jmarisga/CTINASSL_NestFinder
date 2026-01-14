@@ -6,12 +6,11 @@ const router = express.Router();
 // Get all available properties (public)
 router.get('/', async (req, res) => {
   try {
-    const { type, status, featured, search, limit = 50 } = req.query;
+    const { type, featured, search, limit = 50 } = req.query;
 
     const filter = {};
 
     if (type) filter.type = type;
-    if (status) filter.status = status;
     if (featured === 'true') filter.featured = true;
 
     let query = Property.find(filter);

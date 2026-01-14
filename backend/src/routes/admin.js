@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import Property from '../models/Property.js';
 import Visit from '../models/Visit.js';
+import Contact from '../models/Contact.js';
 import { adminRequired } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -77,16 +78,18 @@ router.get('/verify', adminRequired, (req, res) => {
 
 router.get('/stats', adminRequired, async (req, res) => {
   try {
-    const [usersCount, propertiesCount, visitsCount] = await Promise.all([
+    const [usersCount, propertiesCount, visitsCount, contactsCount] = await Promise.all([
       User.countDocuments(),
       Property.countDocuments(),
       Visit.countDocuments(),
+      Contact.countDocuments(),
     ]);
 
     res.json({
       users: usersCount,
       properties: propertiesCount,
       visits: visitsCount,
+      contacts: contactsCount,
     });
   } catch (err) {
     console.error('Stats error:', err);

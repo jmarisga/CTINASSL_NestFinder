@@ -3,7 +3,7 @@
  * Handles login, registration, logout, and visit scheduling
  */
 (function () {
-  const API_BASE = 'http://localhost:5000/api';
+  const API_BASE = 'http://localhost:5001/api';
 
   const feedbackModalEl = document.getElementById('authFeedbackModal');
   const feedbackModal = feedbackModalEl ? new bootstrap.Modal(feedbackModalEl) : null;
@@ -69,6 +69,7 @@
     const isLogin = mode === 'login';
     $('#authModalTitle').text(isLogin ? 'Login' : 'Create an account');
     $('#auth-name-group').toggle(!isLogin);
+    $('#auth-name').prop('required', !isLogin);
     $('#auth-submit-btn').text(isLogin ? 'Login' : 'Register');
     $('#auth-error').hide();
     $('#auth-form')[0].reset();
@@ -154,11 +155,16 @@
 
     $('#auth-error').hide();
 
+    // Prepare request body - only include name for registration
+    const requestBody = mode === 'login' 
+      ? { email, password }
+      : { name, email, password };
+
     $.ajax({
       url: API_BASE + endpoint,
       method: 'POST',
       contentType: 'application/json',
-      data: JSON.stringify({ name, email, password }),
+      data: JSON.stringify(requestBody),
       success: function (res) {
         setToken(res.token);
         $('#authModal').modal('hide');
@@ -174,7 +180,7 @@
           (xhr.responseJSON && xhr.responseJSON.message) ||
           xhr.statusText ||
           'Authentication failed';
-        console.error('Auth error', { status: xhr.status, response: xhr.responseText });
+        console.error('Auth error - auth.js:183', { status: xhr.status, response: xhr.responseText });
         $('#auth-error').text(message).show();
       },
     });

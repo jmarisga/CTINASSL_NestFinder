@@ -107,7 +107,7 @@
           <form id="auth-form">
             <div class="mb-3" id="auth-name-group" style="display:none;">
               <label for="auth-name" class="form-label">Full Name</label>
-              <input type="text" class="form-control" id="auth-name" placeholder="Your full name">
+              <input type="text" class="form-control" id="auth-name" placeholder="Your full name" required>
             </div>
             <div class="mb-3">
               <label for="auth-email" class="form-label">Email address</label>
@@ -248,7 +248,7 @@
   <script src="assets/js/property-data.js"></script>
   <script src="assets/js/auth.js"></script>
   <script>
-    const API_BASE = 'http://localhost:5000/api';
+    const API_BASE = 'http://localhost:5001/api';
 
     // Function to build URL parameters for property details
     function buildPropertyURL(property) {
