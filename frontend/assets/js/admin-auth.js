@@ -5,7 +5,7 @@
 
 const AdminAuth = (function () {
   // Configuration
-  const API_BASE = 'http://localhost:5000/api';
+  const API_BASE = 'http://localhost:5001/api';
   const TOKEN_KEY = 'admin_token';
   const USER_KEY = 'admin_user';
 

@@ -8,6 +8,7 @@ import authRoutes from './src/routes/auth.js';
 import visitRoutes from './src/routes/visits.js';
 import adminRoutes from './src/routes/admin.js';
 import propertyRoutes from './src/routes/properties.js';
+import contactRoutes from './src/routes/contacts.js';
 // Middleware
 import { globalLimiter, authLimiter } from './src/middleware/rateLimiter.js';
 // DB config
@@ -15,6 +16,19 @@ import { connectDB } from './src/config/db.js';
 
 // Load environment variables 
 dotenv.config();
+
+// Validate required environment variables
+if (!process.env.MONGO_URI) {
+  console.error('❌ Error: MONGO_URI environment variable is required');
+  console.error('Please create a .env file with: MONGO_URI=mongodb://127.0.0.1:27017/villa');
+  process.exit(1);
+}
+
+if (!process.env.JWT_SECRET) {
+  console.error('❌ Error: JWT_SECRET environment variable is required');
+  console.error('Please create a .env file with: JWT_SECRET=yoursecretkeyhere');
+  process.exit(1);
+}
 
 const app = express();
 
@@ -59,6 +73,7 @@ app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/visits', visitRoutes);
 app.use('/api/admin', authLimiter, adminRoutes);
 app.use('/api/properties', propertyRoutes);
+app.use('/api/contacts', contactRoutes);
 
 // Simple health‑check endpoint
 app.get('/', (req, res) => {
@@ -71,8 +86,8 @@ const PORT = process.env.PORT || 5000;
 // Connect to MongoDB, then start the HTTP server
 connectDB().then(() => {
   app.listen(PORT, () => {
-    console.log(`\n🚀 Server running on:`);
-    console.log(`   http://localhost:${PORT}`);
-    console.log(`   http://127.0.0.1:${PORT}\n`);
+    console.log('\n🚀 Server running on:');
+    console.log(`http://localhost:${PORT}`);
+    console.log(`http://127.0.0.1:${PORT}\n`);
   });
 });

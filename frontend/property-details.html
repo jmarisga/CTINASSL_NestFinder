@@ -112,7 +112,7 @@
           <form id="auth-form">
             <div class="mb-3" id="auth-name-group" style="display:none;">
               <label for="auth-name" class="form-label">Full Name</label>
-              <input type="text" class="form-control" id="auth-name" placeholder="Your full name">
+              <input type="text" class="form-control" id="auth-name" placeholder="Your full name" required>
             </div>
             <div class="mb-3">
               <label for="auth-email" class="form-label">Email address</label>
@@ -361,142 +361,66 @@
 
   <script>
     // Load property details and wire auth/scheduling against visits API
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
       const params = new URLSearchParams(window.location.search);
-      const propertyIdFromUrl = params.get('id') || params.get('propertyId');
       
-      const lookupByName = (name) => {
-        if (!name || !window.propertyData || !window.propertyData.properties) return null;
-        return window.propertyData.properties.find(p => p.name === name) || null;
+      // Fetch latest property from API or local data
+      const getLatestProperty = async () => {
+        try {
+          const res = await fetch('http://localhost:5001/api/properties');
+          if (res.ok) {
+            const props = await res.json();
+            if (props[0]) {
+              const p = props[0];
+              return { id: p._id, name: p.name, category: p.type, price: p.price, bedrooms: p.bedrooms, 
+                       bathrooms: p.bathrooms, area: p.area, floor: p.floor || 'N/A', parking: p.parking || 'N/A', 
+                       image: p.image, description: p.description || '' };
+            }
+          }
+        } catch (e) {}
+        return window.propertyData?.properties?.[0] || {};
       };
 
-      const pickFallback = () => {
-        if (window.propertyData && window.propertyData.properties && window.propertyData.properties.length) {
-          return window.propertyData.properties[window.propertyData.properties.length - 1];
+      // Load property: from URL params or fetch latest
+      let currentProperty;
+      const hasParams = Array.from(params.keys()).length > 0;
+      
+      if (hasParams) {
+        currentProperty = {
+          id: params.get('id') || params.get('propertyId'),
+          name: params.get('name'), category: params.get('category'), price: params.get('price'),
+          bedrooms: params.get('bedrooms'), bathrooms: params.get('bathrooms'), area: params.get('area'),
+          floor: params.get('floor'), parking: params.get('parking'), image: params.get('image'),
+          description: params.get('description')
+        };
+        // Enrich missing data from local
+        if (!currentProperty.id || !currentProperty.name) {
+          const match = window.propertyData?.properties?.find(p => p.name === currentProperty.name) || window.propertyData?.properties?.[0];
+          if (match) currentProperty = { ...match, ...currentProperty, id: currentProperty.id || match.id };
         }
-        return null;
-      };
-
-      // Start with URL params
-      let currentProperty = {
-        id: propertyIdFromUrl || '',
-        name: params.get('name'),
-        category: params.get('category'),
-        price: params.get('price'),
-        bedrooms: params.get('bedrooms'),
-        bathrooms: params.get('bathrooms'),
-        area: params.get('area'),
-        floor: params.get('floor'),
-        parking: params.get('parking'),
-        image: params.get('image'),
-        description: params.get('description'),
-      };
-
-      // If missing id or other fields, try to enrich from property data
-      if (!currentProperty.id || !currentProperty.name) {
-        const match = currentProperty.name ? lookupByName(currentProperty.name) : pickFallback();
-        if (match) {
-          currentProperty = { ...match, ...currentProperty, id: currentProperty.id || match.id };
-        }
+      } else {
+        currentProperty = await getLatestProperty();
       }
 
-      // Final fallback to ensure we always have some identifier
+      // Ensure ID exists
       if (!currentProperty.id && currentProperty.name) {
         currentProperty.id = currentProperty.name.toLowerCase().replace(/\s+/g, '-');
       }
 
       // Render details
-      if (currentProperty.name) document.getElementById('property-name').textContent = currentProperty.name;
-      if (currentProperty.category) document.getElementById('property-category').textContent = currentProperty.category;
+      const set = (id, val, isHTML) => { const el = document.getElementById(id); if (el && val) isHTML ? el.innerHTML = val : el.textContent = val; };
+      set('property-name', currentProperty.name);
+      set('property-category', currentProperty.category);
       if (currentProperty.image) document.getElementById('property-image').src = 'assets/images/' + currentProperty.image;
-      if (currentProperty.price) document.getElementById('property-price-display').textContent = currentProperty.price;
-      if (currentProperty.description) document.getElementById('property-description').innerHTML = currentProperty.description;
-
-      if (currentProperty.area) document.getElementById('property-area').innerHTML = currentProperty.area + '<br><span>Total Flat Space</span>';
-      if (currentProperty.bedrooms) document.getElementById('property-bedrooms').textContent = currentProperty.bedrooms;
-      if (currentProperty.bathrooms) document.getElementById('property-bathrooms').textContent = currentProperty.bathrooms;
-      if (currentProperty.area) document.getElementById('property-area-display').textContent = currentProperty.area;
-      if (currentProperty.floor) document.getElementById('property-floor').textContent = currentProperty.floor;
-      if (currentProperty.parking) document.getElementById('property-parking').textContent = currentProperty.parking;
-
-      // ------- Custom Scheduling for Property Details -------
-      // Override the default schedule modal opening to use current property
-      function openScheduleModalForProperty() {
-        const token = localStorage.getItem('nestfinder_jwt') || '';
-        if (!token) {
-          // Use the auth.js function to open login modal
-          $('#nav-login-link').trigger('click');
-          return;
-        }
-        const derivedName =
-          currentProperty.name ||
-          (document.getElementById('property-name')?.textContent || '').trim();
-        const derivedId =
-          currentProperty.id ||
-          derivedName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
-
-        $('#schedule-form')[0].reset();
-        $('#schedule-property-name').val(derivedName || 'Selected property');
-        $('#scheduleModal').data('property-id', derivedId || 'custom');
-        $('#schedule-error').hide();
-        $('#schedule-success').hide();
-        $('#scheduleModal').modal('show');
-      }
-
-      // Override schedule button clicks to use current property
-      $('#nav-schedule-link, #schedule-visit-btn').off('click').on('click', function (e) {
-        e.preventDefault();
-        openScheduleModalForProperty();
-      });
-
-      // Override schedule form submit to use current property
-      $('#schedule-form').off('submit').on('submit', function (e) {
-        e.preventDefault();
-        const token = localStorage.getItem('nestfinder_jwt') || '';
-        if (!token) {
-          $('#schedule-error').text('You must be logged in to schedule a visit.').show();
-          return;
-        }
-
-        const payload = {
-          propertyId: $('#scheduleModal').data('property-id') || currentProperty.id || 'custom',
-          propertyName: $('#schedule-property-name').val() || currentProperty.name || 'Custom property',
-          visitDate: $('#schedule-date').val(),
-          notes: $('#schedule-notes').val(),
-        };
-
-        // Validate future datetime
-        if (!payload.visitDate || Number.isNaN(new Date(payload.visitDate).getTime())) {
-          $('#schedule-error').text('Please choose a valid date and time.').show();
-          return;
-        }
-        if (new Date(payload.visitDate).getTime() <= Date.now()) {
-          $('#schedule-error').text('Please pick a future date/time for your visit.').show();
-          return;
-        }
-
-        $('#schedule-error').hide();
-        $('#schedule-success').hide();
-
-        $.ajax({
-          url: 'http://localhost:5000/api/visits',
-          method: 'POST',
-          contentType: 'application/json',
-          headers: {
-            Authorization: 'Bearer ' + token,
-          },
-          data: JSON.stringify(payload),
-          success: function () {
-            $('#schedule-success').text('Your visit has been scheduled!').show();
-            $('#schedule-form')[0].reset();
-          },
-          error: function (xhr) {
-            const message = (xhr.responseJSON && xhr.responseJSON.message) || 'Could not schedule visit';
-            $('#schedule-error').text(message).show();
-          },
-        });
-      });
-    });
+      set('property-price-display', currentProperty.price);
+      set('property-description', currentProperty.description, true);
+      set('property-area', currentProperty.area ? currentProperty.area + '<br><span>Total Flat Space</span>' : null, true);
+      set('property-bedrooms', currentProperty.bedrooms);
+      set('property-bathrooms', currentProperty.bathrooms);
+      set('property-area-display', currentProperty.area);
+      set('property-floor', currentProperty.floor);
+      set('property-parking', currentProperty.parking);
+    })();
   </script>
 
   </body>

@@ -81,6 +81,7 @@
                 <li><a href="admin-properties.html">Properties</a></li>
                 <li><a href="admin-users.html">Users</a></li>
                 <li><a href="admin-visits.html" class="active">Visits</a></li>
+                <li><a href="admin-contacts.html">Contacts</a></li>
                 <li><a href="#" id="logout-btn">Logout</a></li>
               </ul>
 
@@ -217,7 +218,7 @@
         }
 
         // Populate table
-        visits.forEach(visit => {
+        visits.forEach((visit, index) => {
           const userName = visit.user ? visit.user.name : 'Unknown';
           const userEmail = visit.user ? visit.user.email : 'N/A';
           const propertyName = visit.propertyName || 'Unknown Property';
@@ -225,7 +226,7 @@
 
           const row = document.createElement('tr');
           row.innerHTML = `
-            <td><small>${escapeHtml(visit._id.slice(-8))}</small></td>
+            <td><small>${index + 1}</small></td>
             <td>${escapeHtml(userName)}</td>
             <td>${escapeHtml(userEmail)}</td>
             <td>${escapeHtml(propertyName)}</td>

@@ -10,6 +10,7 @@ function generateToken(user) {
   const payload = {
     sub: user._id.toString(),
     email: user.email,
+    role: user.role || 'user',
   };
 
   return jwt.sign(payload, process.env.JWT_SECRET || 'dev_secret_change_me', {

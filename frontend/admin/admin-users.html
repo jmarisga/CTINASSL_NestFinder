@@ -83,6 +83,7 @@
                 <li><a href="admin-properties.html">Properties</a></li>
                 <li><a href="admin-users.html" class="active">Users</a></li>
                 <li><a href="admin-visits.html">Visits</a></li>
+                <li><a href="admin-contacts.html">Contacts</a></li>
                 <li><a href="#" id="logout-btn">Logout</a></li>
               </ul>
 
@@ -192,11 +193,11 @@
         tableBody.innerHTML = '';
 
         // Populate table
-        users.forEach(user => {
+        users.forEach((user, index) => {
           const roleClass = user.role === 'admin' ? 'badge-admin' : 'badge-user';
           const row = document.createElement('tr');
           row.innerHTML = `
-            <td><small>${escapeHtml(user._id.slice(-8))}</small></td>
+            <td><small>${index + 1}</small></td>
             <td>${escapeHtml(user.name)}</td>
             <td>${escapeHtml(user.email)}</td>
             <td>
