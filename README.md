@@ -2,7 +2,7 @@
 
 A modern, full-stack MERN (MongoDB, Express, React, Node.js) real estate platform for browsing and managing properties in Laguna City, Philippines.
 
-## 🏠 Features
+##  Features
 
 ### User Features
 
@@ -20,7 +20,7 @@ A modern, full-stack MERN (MongoDB, Express, React, Node.js) real estate platfor
 - View and manage property visit schedules
 - Dashboard statistics
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 **Backend:**
 
@@ -36,7 +36,7 @@ A modern, full-stack MERN (MongoDB, Express, React, Node.js) real estate platfor
 - Modal-based authentication
 - Dynamic property rendering
 
-## 📦 Installation
+## Installation
 
 ### Prerequisites
 
@@ -133,7 +133,7 @@ A modern, full-stack MERN (MongoDB, Express, React, Node.js) real estate platfor
 - `GET /api/admin/properties` - Manage properties
 - `GET /api/admin/visits` - Manage visits
 
-## 🔒 Security Features
+## Security Features
 
 - Password hashing with bcrypt (12 rounds)
 - JWT tokens with 2h expiry (8h for admin)
@@ -143,7 +143,7 @@ A modern, full-stack MERN (MongoDB, Express, React, Node.js) real estate platfor
 - Input validation
 - Role-based access control
 
-## 🚀 Deployment
+## Deployment
 
 For production deployment:
 
@@ -162,7 +162,7 @@ This project is part of CTINASSL coursework.
 
 - Jersey Marisga (@jmarisga)
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create your feature branch
