@@ -9,11 +9,6 @@
  * @author Bartosz Wojciechowski
  * @author David Deutsch
  * @license The MIT License (MIT)
- * @todo Lazy Load Icon
- * @todo prevent animationend bubling
- * @todo itemsScaleUp
- * @todo Test Zepto
- * @todo stagePadding calculate wrong active classes
  */
 ;(function($, window, document, undefined) {
 
@@ -76,14 +71,12 @@
 
 		/**
 		 * Coordinates of all items in pixel.
-		 * @todo The name of this member is missleading.
 		 * @protected
 		 */
 		this._coordinates = [];
 
 		/**
 		 * Current breakpoint.
-		 * @todo Real media queries would be nice.
 		 * @protected
 		 */
 		this._breakpoint = null;
@@ -107,7 +100,6 @@
 
 		/**
 		 * Merge values of all items.
-		 * @todo Maybe this could be part of a plugin.
 		 * @protected
 		 */
 		this._mergers = [];
@@ -131,7 +123,6 @@
 
 		/**
 		 * Current state information for the drag operation.
-		 * @todo #261
 		 * @protected
 		 */
 		this._drag = {
@@ -328,7 +319,6 @@
 			var clones = [],
 				items = this._items,
 				settings = this.settings,
-				// TODO: Should be computed from number of min width items in stage
 				view = Math.max(settings.items * 2, 4),
 				size = Math.ceil(items.length / 2) * 2,
 				repeat = settings.loop && items.length ? settings.rewind ? view : Math.max(view, size) : 0,
@@ -551,8 +541,6 @@
 
 	/**
 	 * Setups the current settings.
-	 * @todo Remove responsive classes. Why should adaptive designs be brought into IE8?
-	 * @todo Support for media queries by using `matchMedia` would be nice.
 	 * @public
 	 */
 	Owl.prototype.setup = function() {
@@ -604,7 +592,6 @@
 
 	/**
 	 * Prepares an item before add.
-	 * @todo Rename event parameter `content` to `item`.
 	 * @protected
 	 * @returns {jQuery|HTMLElement} - The item container.
 	 */
@@ -725,8 +712,6 @@
 
 	/**
 	 * Registers event handlers.
-	 * @todo Check `msPointerEnabled`
-	 * @todo #261
 	 * @protected
 	 */
 	Owl.prototype.registerEventHandlers = function() {
@@ -752,8 +737,6 @@
 
 	/**
 	 * Handles `touchstart` and `mousedown` events.
-	 * @todo Horizontal swipe threshold as option
-	 * @todo #261
 	 * @protected
 	 * @param {Event} event - The event arguments.
 	 */

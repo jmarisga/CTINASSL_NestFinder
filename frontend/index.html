@@ -5,7 +5,15 @@
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; img-src 'self' data: https://via.placeholder.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http://localhost:5001; frame-ancestors 'none'; form-action 'self';">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" integrity="sha384-NhSC1Hrpc7ySttn31wFHmYMmEaqBFBNUOfZbVHgQH8l6DvLalMHkuWKjkjW5HoPT2" crossorigin="anonymous">
 
     <title>Nest Finder - Real Estate Platform</title>
 
@@ -18,7 +26,7 @@
     <link rel="stylesheet" href="assets/css/templatemo-villa-agency.css">
     <link rel="stylesheet" href="assets/css/owl.css">
     <link rel="stylesheet" href="assets/css/animate.css">
-    <link rel="stylesheet"href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" integrity="sha384-Gx/wUuIbQ7h2LqOZCU2e6X+L0WvBOqVhgQmjxL2cWJq1LiQ3F98qG8q7hUXZfE9EI" crossorigin="anonymous"/>
   </head>
 
 <body>
@@ -518,7 +526,7 @@
 
   <!-- Scripts -->
   <!-- Bootstrap core JavaScript -->
-  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
   <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
   <script src="assets/js/isotope.min.js"></script>
   <script src="assets/js/owl-carousel.js"></script>
@@ -542,10 +550,17 @@
       submitBtn.disabled = true;
       submitBtn.textContent = 'Sending...';
 
+      // Get CSRF token from cookie
+      const csrfToken = document.cookie.split('; ').find(row => row.startsWith('csrfToken='))?.split('=')[1];
+
       try {
         const response = await fetch('http://localhost:5001/api/contacts', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken || ''
+          },
+          credentials: 'include',
           body: JSON.stringify(formData)
         });
 
@@ -566,7 +581,10 @@
     });
   </script>
   <script>
-    const API_BASE = 'http://localhost:5001/api';
+    // Environment-aware API base URL
+    const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:5001/api'
+      : `${window.location.protocol}//${window.location.hostname}/api`;
 
     // Get category class for filtering
     function getCategoryClass(category) {
@@ -638,7 +656,7 @@
           }));
         }
       } catch (error) {
-        console.log('API not available, using local data only');
+        // API not available, fallback to local data
       }
 
       // Combine all properties

@@ -36,7 +36,6 @@ const AdminAuth = (function () {
         return { success: false, message: data.message || 'Invalid credentials' };
       }
     } catch (error) {
-      console.error('Login error:', error);
       return { success: false, message: 'Network error. Please try again.' };
     }
   }
