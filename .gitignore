@@ -9,9 +9,16 @@ yarn.lock
 # Environment variables
 .env
 .env.local
+.env.*.local
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Sensitive files
+private.key
+*.crt
+*.pem
+*.key
 
 # macOS
 .DS_Store

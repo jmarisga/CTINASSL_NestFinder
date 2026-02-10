@@ -180,7 +180,6 @@
           (xhr.responseJSON && xhr.responseJSON.message) ||
           xhr.statusText ||
           'Authentication failed';
-        console.error('Auth error - auth.js:183', { status: xhr.status, response: xhr.responseText });
         $('#auth-error').text(message).show();
       },
     });

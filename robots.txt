@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /api/
+Disallow: /config/
+Disallow: /.git/
+Disallow: /.env
+Disallow: /backend/
+Allow: /
